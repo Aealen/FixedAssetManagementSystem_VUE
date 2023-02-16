@@ -1,4 +1,4 @@
-import { login, logout, getUserViewById } from '@/api/user'
+import { login, logout, getUserViewById, getUserViewsByPage, getUserViewsCount } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { resetRouter } from '@/router'
 
@@ -44,6 +44,31 @@ const actions = {
     })
   },
 
+  getUserViewsByPage(data) {
+    const { keyword, page, perPage } = data
+    return new Promise((resolve, reject) => {
+      getUserViewsByPage(keyword, page, perPage).then(resp => {
+        const { data } = resp
+        if (data.code !== 200) {
+          return reject(resp.data.msg)
+        }
+        resolve(data)
+      })
+    })
+  },
+  getUserViewsCount() {
+    return new Promise((resolve, reject) => {
+      getUserViewsCount().then(resp => {
+        const { data } = resp
+        if (data.code !== 200) {
+          return reject(resp.data.msg)
+        }
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
   // get user info
   getUserViewById({ commit, state }) {
     return new Promise((resolve, reject) => {
@@ -54,7 +79,7 @@ const actions = {
         }
         const { username, avatar } = data
 
-        console.log(response)
+        // console.log(response)
         // 信息更新到session
         sessionStorage.setItem('uid', response.data.id)
         sessionStorage.setItem('username', response.data.username)
