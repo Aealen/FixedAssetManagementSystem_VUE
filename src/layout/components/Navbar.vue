@@ -20,7 +20,6 @@
           <a target="_blank" href="https://github.com/Aealen/FixedAssetManagementSystem">
             <el-dropdown-item>Github</el-dropdown-item>
           </a>
-
           <el-dropdown-item divided @click.native="logout">
             <span style="display:block;">Log Out</span>
           </el-dropdown-item>
