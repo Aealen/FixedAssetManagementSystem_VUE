@@ -8,18 +8,19 @@
       fit
       highlight-current-row
     >
+
       <el-table-column align="center" label="ID" width="95">
         <template slot-scope="scope">
-<!--          {{ scope.$index }}-->
-          {{scope.row.id}}
+          <!--          {{ scope.$index }}-->
+          {{ scope.row.id }}
         </template>
       </el-table-column>
-      <el-table-column label="昵称" width="140">
+      <el-table-column label="昵称" width="180">
         <template slot-scope="scope">
           {{ scope.row.nickname }}
         </template>
       </el-table-column>
-      <el-table-column label="用户名" width="140" align="center">
+      <el-table-column label="用户名" width="180" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.username }}</span>
         </template>
@@ -37,29 +38,34 @@
       </el-table-column>
       <el-table-column label="所在部门" width="110" align="center">
         <template slot-scope="scope">
-          {{ scope.row.deptId}}.{{ scope.row.deptName}}
+          {{ scope.row.deptId }}.{{ scope.row.deptName }}
         </template>
       </el-table-column>
       <el-table-column label="用户权限" width="110" align="center">
         <template slot-scope="scope">
-          {{ scope.row.roleId}}.{{ scope.row.roleName}}
+          {{ scope.row.roleId }}.{{ scope.row.roleName }}
         </template>
       </el-table-column>
       <el-table-column label="上次登陆" width="190" align="center">
         <template slot-scope="scope">
-          {{ scope.row.loginTime}}
+          {{ scope.row.loginTime }}
         </template>
       </el-table-column>
 
-      <el-table-column class-name="status-col" label="Status" width="110" align="center">
+      <el-table-column align="center" prop="created_at" label="操作" width="350">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.status | statusFilter">{{ scope.row.status }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" prop="created_at" label="Display_time" width="200">
-        <template slot-scope="scope">
-          <i class="el-icon-time" />
-          <span>{{ scope.row.display_time }}</span>
+          <el-link class="text_link" type="primary" @click="showUserDrawer=true;currSelUserId=scope.row.id;showUserManagerDrawer()">详细信息</el-link>
+          <el-dropdown>
+            <el-link class="el-dropdown-link" type="primary">
+              操作列表<i class="el-icon-arrow-down el-icon--right" />
+            </el-link>
+
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item><span @click="resetPassword(scope.row.id)">重置密码</span></el-dropdown-item>
+              <el-dropdown-item><span @click="getRoles(scope.row.id);">权限修改</span></el-dropdown-item>
+              <el-dropdown-item><span @click="getDepts(scope.row.id);">部门修改</span></el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </template>
       </el-table-column>
     </el-table>
@@ -68,16 +74,58 @@
       :page-size="pageParams.perPage"
       :pager-count="5"
       layout="prev, pager, next"
-      :total="this.sumCount"
+      :total="sumCount"
       :current-page="pageParams.currPage"
       @current-change="handleChangePage"
     />
+
+    <UserManagerDrawer :user-id="currSelUserId" :show-user-drawer="showUserDrawer" @closeUserManagerDrawer="closeUserMangerDrawer()" />
+
+    <el-dialog
+      title="角色选择"
+      :visible.sync="showUserRoleDialog"
+      width="20%"
+    >
+      <el-select v-model="selRole" placeholder="请选择">
+        <el-option
+          v-for="item in roleOptions"
+          :key="item.rid"
+          :label="item.name"
+          :value="item.rid"
+        />
+      </el-select>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="handleDialogClose">取 消</el-button>
+        <el-button type="primary" @click="setUR();">确 定</el-button>
+      </span>
+    </el-dialog>
+    <el-dialog
+      title="部门选择"
+      :visible.sync="showUserDeptDialog"
+      width="20%"
+    >
+      <el-select v-model="selDept" placeholder="请选择">
+        <el-option
+          v-for="item in deptOptions"
+          :key="item.did"
+          :label="item.name"
+          :value="item.did"
+        />
+      </el-select>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="handleDialogClose">取 消</el-button>
+        <el-button type="primary" @click="setDept();">确 定</el-button>
+      </span>
+    </el-dialog>
+
   </div>
 </template>
 
 <script>
-import { getList } from '@/api/table'
-import { getUserViewsCount, getUserViewsByPage } from '@/api/user'
+import UserManagerDrawer from '@/components/UserManagerDraw/index'
+import { getUserViewsCount, resetUserPassword } from '@/api/user'
+import { setUserRole } from '@/api/role'
+import { getAllDepts, setUserDept } from '@/api/depts'
 import request from '@/utils/request'
 
 export default {
@@ -91,6 +139,9 @@ export default {
       return statusMap[status]
     }
   },
+  components: {
+    UserManagerDrawer
+  },
   data() {
     return {
       list: null,
@@ -100,7 +151,19 @@ export default {
         perPage: 10
       },
       sumCount: 0,
-      listLoading: true
+      listLoading: true,
+      showUserDrawer: false,
+      currSelUserId: 0,
+
+      showUserRoleDialog: false,
+      roleOptions: null,
+      selRole: null,
+      selUid: null,
+
+      showUserDeptDialog: false,
+      deptOptions: null,
+      selDept: null
+
     }
   },
   created() {
@@ -111,7 +174,7 @@ export default {
     fetchData() {
       this.listLoading = true
       getUserViewsCount().then(response => {
-        console.log(response)
+        // console.log(response)
 
         if (response.code !== 200) {
           this.$message.error(response.msg)
@@ -123,6 +186,67 @@ export default {
         this.$message.error(error)
       })
     },
+
+    getDepts(uid) {
+      getAllDepts()
+        .then(resp => {
+          if (resp.code === 200) {
+            this.deptOptions = resp.data
+            this.selUid = uid
+            this.showUserDeptDialog = true
+          } else {
+            this.$message.error(resp.msg)
+          }
+        })
+    },
+    setDept() {
+      setUserDept(this.selUid, this.selDept).then(resp => {
+        if (resp.code === 200) {
+          this.showUserDeptDialog = false
+          this.$message.success('修改成功!')
+          this.$router.go(0)
+        } else {
+          this.$message.error(resp.msg)
+        }
+      })
+    },
+    setUR() {
+      setUserRole(this.selUid, this.selRole).then(resp => {
+        if (resp.code === 200) {
+          this.showUserRoleDialog = false
+          this.$message.success('修改成功!')
+          this.$router.go(0)
+        } else {
+          this.$message.error(resp.msg)
+        }
+      })
+    },
+
+    getRoles(uid) {
+      // 获取所有角色信息
+      request({
+        url: '/role/getAllRoles',
+        method: 'get'
+      }).then(resp => {
+        if (resp.code === 200) {
+          this.roleOptions = resp.data
+          this.selUid = uid
+          this.showUserRoleDialog = true
+        } else {
+          this.$message.error(resp.msg)
+        }
+      })
+    },
+
+    handleDialogClose() {
+      this.showUserRoleDialog = false
+      this.showUserDeptDialog = false
+      this.$message({
+        type: 'info',
+        message: '已取消操作'
+      })
+    },
+
     handleChangePage(val) {
       request({
         url: '/user/queryUserByPage',
@@ -142,7 +266,49 @@ export default {
         console.log(err)
         this.listLoading = false
       })
+    },
+    resetPassword(uid) {
+      // 1.给出提示确认  2.重置密码 3.返回结果
+      this.$confirm('此操作将会重置用户密码, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        resetUserPassword(uid).then(resp => {
+          if (resp.code === 200) {
+            this.$message({
+              type: 'success',
+              message: '重置密码为: password'
+            })
+          } else {
+            this.$message({
+              type: 'error',
+              message: resp.msg
+            })
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消操作'
+        })
+      })
+    },
+    showUserManagerDrawer() {
+      this.showUserDrawer
+      console.log(this.showUserDrawer)
+    },
+    closeUserMangerDrawer() {
+      console.log('parent:' + this.showUserDrawer)
+      this.showUserDrawer = false
+      console.log('parent:' + this.showUserDrawer)
     }
   }
 }
 </script>
+
+<style lang="css" scoped>
+.text_link{
+  margin-right:20px
+}
+</style>

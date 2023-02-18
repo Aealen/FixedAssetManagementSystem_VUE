@@ -32,7 +32,7 @@ router.beforeEach(async(to, from, next) => {
       } else {
         try {
           // get user info
-          await store.dispatch('user/getUserViewById')
+          await store.dispatch('user/getCurrUserViewByToken')
           next()
         } catch (error) {
           // remove token and go to login page to re-login

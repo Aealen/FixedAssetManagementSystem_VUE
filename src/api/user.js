@@ -9,7 +9,6 @@ export function login(data) {
 }
 
 export function getUserViewsByPage(keyword, page, perPage) {
-  console.log(keyword+page+perPage)
   return request({
     url: '/user/queryUserByPage',
     method: 'post',
@@ -28,13 +27,26 @@ export function getUserViewsCount() {
   })
 }
 
-export function getUserViewById() {
+export function getUserViewByToken() {
   return request({
-    url: '/user/getUserViewById',
+    url: '/user/getUserViewByToken',
     method: 'get'
     // data: {
     //   token: token
     // }
+  })
+}
+
+export function getUserViewById(uid) {
+  return request({
+    url: '/user/getUserViewById/' + uid,
+    method: 'get'
+  })
+}
+export function resetUserPassword(uid) {
+  return request({
+    url: '/user/resetPassword/' + uid,
+    method: 'get'
   })
 }
 

@@ -1,4 +1,4 @@
-import { login, logout, getUserViewById, getUserViewsByPage, getUserViewsCount } from '@/api/user'
+import { login, logout, getUserViewsByPage, getUserViewsCount, getUserViewByToken } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { resetRouter } from '@/router'
 
@@ -34,7 +34,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       login({ username: username, password: password }).then(response => {
         const { data } = response
-        console.log(data.token)
+        // console.log(data.token)
         commit('SET_TOKEN', data.token)
         setToken(data.token)
         resolve()
@@ -70,9 +70,9 @@ const actions = {
     })
   },
   // get user info
-  getUserViewById({ commit, state }) {
+  getCurrUserViewByToken({ commit, state }) {
     return new Promise((resolve, reject) => {
-      getUserViewById().then(response => {
+      getUserViewByToken().then(response => {
         const { data } = response
         if (!data) {
           return reject('令牌失效,请重新登陆.')
