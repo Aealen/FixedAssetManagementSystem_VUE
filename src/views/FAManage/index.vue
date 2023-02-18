@@ -15,40 +15,40 @@
           {{ scope.row.id }}
         </template>
       </el-table-column>
-      <el-table-column label="昵称" width="180">
+      <el-table-column label="资产名" width="180">
         <template slot-scope="scope">
-          {{ scope.row.nickname }}
+          {{ scope.row.faName }}
         </template>
       </el-table-column>
-      <el-table-column label="用户名" width="180" align="center">
+      <el-table-column label="型号" width="180" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.username }}</span>
+          <span>{{ scope.row.faModel }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="联系电话" width="110" align="center">
+      <el-table-column label="生产厂商" width="220" align="center">
         <template slot-scope="scope">
-          {{ scope.row.phoneNum }}
+          {{ scope.row.faProducer }}
         </template>
       </el-table-column>
-      <el-table-column label="电子邮箱" width="210" align="center">
+      <el-table-column label="单价" width="210" align="center">
         <template slot-scope="scope">
-          {{ scope.row.email }}
+          {{ scope.row.faPrice }}
         </template>
       </el-table-column>
-      <el-table-column label="所在部门" width="110" align="center">
+      <el-table-column label="所属分类" width="110" align="center">
         <template slot-scope="scope">
-          {{ scope.row.deptId }}.{{ scope.row.deptName }}
+          {{ scope.row.faTid }}.{{ scope.row.faTypeName }}
         </template>
       </el-table-column>
-      <el-table-column label="用户权限" width="110" align="center">
+      <el-table-column label="所属部门" width="110" align="center">
         <template slot-scope="scope">
-          {{ scope.row.roleId }}.{{ scope.row.roleName }}
+          {{ scope.row.faDid }}.{{ scope.row.faDeptName }}
         </template>
       </el-table-column>
-      <el-table-column label="上次登陆" width="190" align="center">
+      <el-table-column label="负责人" width="190" align="center">
         <template slot-scope="scope">
-          {{ scope.row.loginTime }}
+          {{ scope.row.faCustodianId }}. {{ scope.row.faCustodian }}
         </template>
       </el-table-column>
 
@@ -61,10 +61,8 @@
             </el-link>
 
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item><span @click="resetPassword(scope.row.id)">重置密码</span></el-dropdown-item>
-              <el-dropdown-item><span @click="getRoles(scope.row.id);">权限修改</span></el-dropdown-item>
-              <el-dropdown-item><span @click="getDepts(scope.row.id);">部门修改</span></el-dropdown-item>
-              <el-dropdown-item><span @click="delUser(scope.row.id);">删除用户</span></el-dropdown-item>
+              <el-dropdown-item><span @click="delFixedAsset(scope.row.id)">删除此项</span></el-dropdown-item>
+
             </el-dropdown-menu>
           </el-dropdown>
         </template>
@@ -124,10 +122,8 @@
 
 <script>
 import UserManagerDrawer from '@/components/UserManagerDraw/index'
-import { delUser, getUserViewsCount, resetUserPassword } from '@/api/user'
-import { setUserRole } from '@/api/role'
-import { getAllDepts, setUserDept } from '@/api/depts'
 import request from '@/utils/request'
+import { delFa, getFaCount } from '@/api/fa'
 
 export default {
   filters: {
@@ -174,9 +170,8 @@ export default {
 
     fetchData() {
       this.listLoading = true
-      getUserViewsCount().then(response => {
+      getFaCount().then(response => {
         // console.log(response)
-
         if (response.code !== 200) {
           this.$message.error(response.msg)
         }
@@ -188,57 +183,6 @@ export default {
       })
     },
 
-    getDepts(uid) {
-      getAllDepts()
-        .then(resp => {
-          if (resp.code === 200) {
-            this.deptOptions = resp.data
-            this.selUid = uid
-            this.showUserDeptDialog = true
-          } else {
-            this.$message.error(resp.msg)
-          }
-        })
-    },
-    setDept() {
-      setUserDept(this.selUid, this.selDept).then(resp => {
-        if (resp.code === 200) {
-          this.showUserDeptDialog = false
-          this.$message.success('修改成功!')
-          this.$router.go(0)
-        } else {
-          this.$message.error(resp.msg)
-        }
-      })
-    },
-    setUR() {
-      setUserRole(this.selUid, this.selRole).then(resp => {
-        if (resp.code === 200) {
-          this.showUserRoleDialog = false
-          this.$message.success('修改成功!')
-          this.$router.go(0)
-        } else {
-          this.$message.error(resp.msg)
-        }
-      })
-    },
-
-    getRoles(uid) {
-      // 获取所有角色信息
-      request({
-        url: '/role/getAllRoles',
-        method: 'get'
-      }).then(resp => {
-        if (resp.code === 200) {
-          this.roleOptions = resp.data
-          this.selUid = uid
-          this.showUserRoleDialog = true
-        } else {
-          this.$message.error(resp.msg)
-        }
-      })
-    },
-
     handleDialogClose() {
       this.showUserRoleDialog = false
       this.showUserDeptDialog = false
@@ -247,62 +191,13 @@ export default {
         message: '已取消操作'
       })
     },
-
-    handleChangePage(val) {
-      request({
-        url: '/user/queryUserByPage',
-        method: 'post',
-        data: {
-          'keyword': this.pageParams.keyword,
-          'page': val,
-          'perPage': this.pageParams.perPage
-        }
-      }).then(resp => {
-        if (resp.code !== 200) {
-          this.$message.error(resp.msg)
-        }
-        this.list = resp.data
-        this.listLoading = false
-      }).catch(err => {
-        console.log(err)
-        this.listLoading = false
-      })
-    },
-
-    resetPassword(uid) {
-      // 1.给出提示确认  2.重置密码 3.返回结果
-      this.$confirm('此操作将会重置用户密码, 是否继续?', '提示', {
+    delFixedAsset(fid) {
+      this.$confirm('此操作将会删除此项!!!, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        resetUserPassword(uid).then(resp => {
-          if (resp.code === 200) {
-            this.$message({
-              type: 'success',
-              message: '重置密码为: password'
-            })
-          } else {
-            this.$message({
-              type: 'error',
-              message: resp.msg
-            })
-          }
-        })
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消操作'
-        })
-      })
-    },
-    delUser(uid) {
-      this.$confirm('此操作将会删除用户!!!, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        delUser(uid).then(resp => {
+        delFa(fid).then(resp => {
           if (resp.code === 200) {
             this.$router.go(0)
             this.$message({
@@ -323,9 +218,25 @@ export default {
         })
       })
     },
-    showUserManagerDrawer() {
-      this.showUserDrawer
-      console.log(this.showUserDrawer)
+    handleChangePage(val) {
+      request({
+        url: '/fa/queryFaByPage',
+        method: 'post',
+        data: {
+          'keyword': this.pageParams.keyword,
+          'page': val,
+          'perPage': this.pageParams.perPage
+        }
+      }).then(resp => {
+        if (resp.code !== 200) {
+          this.$message.error(resp.msg)
+        }
+        this.list = resp.data
+        this.listLoading = false
+      }).catch(err => {
+        console.log(err)
+        this.listLoading = false
+      })
     },
     closeUserMangerDrawer() {
       console.log('parent:' + this.showUserDrawer)

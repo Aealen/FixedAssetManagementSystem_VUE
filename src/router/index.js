@@ -69,7 +69,7 @@ export const constantRoutes = [
     children: [
       {
         path: 'list',
-        name: 'Table',
+        name: 'UserList',
         component: () => import('@/views/UserManage/index'),
         meta: { title: '用户列表', icon: 'table' }
       },
@@ -90,7 +90,7 @@ export const constantRoutes = [
     children: [
       {
         path: 'list',
-        name: 'Table',
+        name: 'DeptList',
         component: () => import('@/views/UserManage/index'),
         meta: { title: '部门列表', icon: 'table' }
       },
@@ -99,6 +99,27 @@ export const constantRoutes = [
         name: 'Tree',
         component: () => import('@/views/tree/index'),
         meta: { title: 'Tree', icon: 'tree' }
+      }
+    ]
+  },
+  {
+    path: '/fa',
+    component: Layout,
+    redirect: '/fa/table',
+    name: 'FA',
+    meta: { title: '资产管理', icon: 'el-icon-s-help' },
+    children: [
+      {
+        path: 'list',
+        name: 'FAList',
+        component: () => import('@/views/FAManage/index'),
+        meta: { title: '资产列表', icon: 'table' }
+      },
+      {
+        path: 'add',
+        name: 'AddFa',
+        component: () => import('@/views/FAManage/AddFa/index'),
+        meta: { title: '新增项目', icon: 'table' }
       }
     ]
   },

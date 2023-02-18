@@ -67,6 +67,19 @@ export function resetUserPassword(uid) {
   })
 }
 
+export function delUser(uid) {
+  return request({
+    url: '/user/delUser/' + uid,
+    method: 'get'
+  })
+}
+export function getAllCustodian() {
+  return request({
+    url: '/user/getAllCustodian',
+    method: 'get'
+  })
+}
+
 export function logout() {
   console.log('/user/auth/logout')
   return request({
