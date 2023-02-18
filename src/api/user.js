@@ -8,6 +8,23 @@ export function login(data) {
   })
 }
 
+export function regist(data) {
+  const { username, password, nickname, deptId, phoneNum, email, roleId } = data
+  return request({
+    url: '/user/auth/regist',
+    method: 'post',
+    data: {
+      username: username,
+      password: password,
+      nickname: nickname,
+      deptId: deptId,
+      phoneNum: phoneNum,
+      email: email,
+      roleId: roleId
+    }
+  })
+}
+
 export function getUserViewsByPage(keyword, page, perPage) {
   return request({
     url: '/user/queryUserByPage',

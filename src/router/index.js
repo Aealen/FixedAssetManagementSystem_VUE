@@ -36,6 +36,11 @@ export const constantRoutes = [
     component: () => import('@/views/login/index'),
     hidden: true
   },
+  {
+    path: '/regist',
+    component: () => import('@/views/regist/index'),
+    hidden: false
+  },
 
   {
     path: '/404',
@@ -56,17 +61,38 @@ export const constantRoutes = [
   },
 
   {
-    path: '/example',
+    path: '/user',
     component: Layout,
-    redirect: '/example/table',
+    redirect: '/user/table',
     name: 'Example',
-    meta: { title: '用户模块', icon: 'el-icon-s-help' },
+    meta: { title: '用户管理', icon: 'el-icon-s-help' },
     children: [
       {
-        path: 'table',
+        path: 'list',
         name: 'Table',
-        component: () => import('@/views/table/index'),
+        component: () => import('@/views/UserManage/index'),
         meta: { title: '用户列表', icon: 'table' }
+      },
+      {
+        path: 'tree',
+        name: 'Tree',
+        component: () => import('@/views/tree/index'),
+        meta: { title: 'Tree', icon: 'tree' }
+      }
+    ]
+  },
+  {
+    path: '/dept',
+    component: Layout,
+    redirect: '/dept/table',
+    name: 'Dept',
+    meta: { title: '部门管理', icon: 'el-icon-s-help' },
+    children: [
+      {
+        path: 'list',
+        name: 'Table',
+        component: () => import('@/views/UserManage/index'),
+        meta: { title: '部门列表', icon: 'table' }
       },
       {
         path: 'tree',
