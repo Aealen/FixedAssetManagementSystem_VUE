@@ -3,7 +3,7 @@
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
 
       <div class="title-container">
-        <h3 class="title">城科固定资产维修系统</h3>
+        <h3 class="title">城科固定资产维修系统丨登陆</h3>
       </div>
 
       <el-form-item prop="username">
@@ -45,6 +45,7 @@
 
       <div class="tips">
         <span style="margin-right:20px;" @click="$router.push('/regist')">前往注册</span>
+        <span style="float: right" @click="$router.push('/resetpwd')">忘记密码</span>
 <!--        <span> password: any</span>-->
       </div>
 

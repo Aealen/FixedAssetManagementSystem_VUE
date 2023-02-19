@@ -81,9 +81,10 @@ export function getAllCustodian() {
 }
 
 export function logout() {
-  console.log('/user/auth/logout')
   return request({
     url: '/user/auth/logout',
     method: 'post'
   })
 }
+
+

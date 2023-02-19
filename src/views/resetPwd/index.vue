@@ -3,36 +3,38 @@
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
 
       <div class="title-container">
-        <h3 class="title">城科固定资产维修系统丨注册</h3>
+        <h3 class="title">城科固定资产维修系统丨忘记密码</h3>
       </div>
 
-      <el-form-item prop="nickname">
+      <el-form-item prop="email">
         <span class="svg-container">
-          <svg-icon icon-class="user" />
+          <i class="el-icon-message" />
         </span>
         <el-input
-          ref="nickname"
-          v-model="loginForm.nickname"
-          placeholder="输入昵称"
-          name="nickname"
+          ref="email"
+          v-model="loginForm.email"
+          placeholder="请输入邮箱"
+          name="email"
           type="text"
           tabindex="1"
           auto-complete="on"
         />
       </el-form-item>
-      <el-form-item prop="username">
+      <el-form-item prop="code">
         <span class="svg-container">
-          <svg-icon icon-class="user" />
+          <i class="el-icon-info" />
         </span>
         <el-input
-          ref="username"
-          v-model="loginForm.username"
-          placeholder="输入用户名  (登陆用)"
-          name="username"
+          ref="code"
+          v-model.number="loginForm.code"
+          placeholder="请输入验证码"
+          name="code"
           type="text"
           tabindex="1"
           auto-complete="on"
+          style="width: 50%"
         />
+        <el-button style="float: right;height: 100%;vertical-align: middle;line-height: 1" type="primary" :loading="sendCodeLoading">发送验证码</el-button>
       </el-form-item>
 
       <el-form-item prop="password">
@@ -73,50 +75,8 @@
           <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
         </span>
       </el-form-item>
-      <el-form-item prop="email">
-        <span class="svg-container">
-          <i class="el-icon-message" />
-        </span>
-        <el-input
-          ref="email"
-          v-model="loginForm.email"
-          placeholder="请输入邮箱"
-          name="username"
-          type="text"
-          tabindex="1"
-          auto-complete="on"
-        />
-      </el-form-item>
-      <el-form-item prop="phoneNum">
-        <span class="svg-container">
-          <i class="el-icon-phone" />
-        </span>
-        <el-input
-          ref="phoneNum"
-          v-model.number="loginForm.phoneNum"
-          placeholder="请输入联系电话"
-          name="username"
-          type="text"
-          tabindex="1"
-          auto-complete="on"
-        />
-      </el-form-item>
 
-      <el-form-item prop="deptId">
-        <span class="svg-container">
-          <i class="el-icon-s-data" />
-        </span>
-        <el-select v-model="selDept" placeholder="请选择部门">
-          <el-option
-            v-for="item in deptOptions"
-            :key="item.did"
-            :label="item.name"
-            :value="item.did"
-          />
-        </el-select>
-      </el-form-item>
-
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleRegist">注册</el-button>
+      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleRegist">提交</el-button>
 
       <div class="tips">
         <span style="margin-right:20px;" @click="$router.push('/login')">前往登陆</span>
@@ -127,23 +87,14 @@
 </template>
 
 <script>
-import { validUsername } from '@/utils/validate'
 import { getAllDepts } from '@/api/depts'
 import { regist } from '@/api/user'
 
 export default {
   name: 'Regist',
   data() {
-    const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
-        callback(new Error('检查输入'))
-      } else {
-        callback()
-      }
-    }
-
     const validatePasswordVerify = (rule, value, callback) => {
-      if (value != this.loginForm.password) {
+      if (value !== this.loginForm.password) {
         callback(new Error('两次密码不一致'))
       } else {
         callback()
@@ -158,34 +109,21 @@ export default {
     }
     return {
       loginForm: {
-        username: '',
-        nickname: '',
         password: '',
         passwordVerify: '',
         email: '',
-        phoneNum: '',
-        roleId: 2, // 默认角色2   报修员
-        deptId: null
+        code: ''
       },
-      deptOptions: [],
-      roleOptions: [],
-      selDept: null,
-      selRole: null,
+      sendCodeLoading: false,
+
       loginRules: {
-        username: [
-          { required: true, trigger: 'blur', message: '不能为空' },
-          { min: 3, max: 20, message: '长度在 3 到 20 个字符', trigger: 'blur' }
-        ],
-        nickname: [
-          { required: true, trigger: 'blur', message: '不能为空' },
-          { min: 3, max: 20, message: '长度在 3 到 20 个字符', trigger: 'blur' }
-        ],
         password: [{ required: true, trigger: 'blur', validator: validatePassword }],
         passwordVerify: [
           { required: true, trigger: 'blur', validator: validatePasswordVerify }
         ],
-        phoneNum: [
-          { required: true, message: '请输入联系电话', trigger: 'blur' }
+        code: [
+          { required: true, message: '请输入验证码', trigger: 'blur' },
+          { max: 5, min: 5, message: '验证码长度为5', trigger: 'blur' }
         ],
         email: [
           { required: true, message: '请输入邮箱地址', trigger: 'change' },
@@ -207,19 +145,13 @@ export default {
     }
   },
   mounted() {
-    this.getDepts()
+
   },
   methods: {
-    getDepts() {
-      getAllDepts()
-        .then(resp => {
-          if (resp.code === 200) {
-            this.deptOptions = resp.data
-            this.deptOptions.splice(0, 1)
-          } else {
-            this.$message.error(resp.msg)
-          }
-        })
+
+    sendCode(){
+      this.sendCodeLoading=true
+
     },
 
     showPwd() {
