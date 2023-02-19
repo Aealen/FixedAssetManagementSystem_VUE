@@ -82,27 +82,6 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/dept',
-    component: Layout,
-    redirect: '/dept/table',
-    name: 'Dept',
-    meta: { title: '部门管理', icon: 'el-icon-s-help' },
-    children: [
-      {
-        path: 'list',
-        name: 'DeptList',
-        component: () => import('@/views/UserManage/index'),
-        meta: { title: '部门列表', icon: 'table' }
-      },
-      {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree' }
-      }
-    ]
-  },
-  {
     path: '/fa',
     component: Layout,
     redirect: '/fa/table',
@@ -119,7 +98,19 @@ export const constantRoutes = [
         path: 'add',
         name: 'AddFa',
         component: () => import('@/views/FAManage/AddFa/index'),
-        meta: { title: '新增项目', icon: 'table' }
+        meta: { title: '新增资产', icon: 'table' }
+      },
+      {
+        path: 'typelist',
+        name: 'typelist',
+        component: () => import('@/views/FAManage/TypeList/index'),
+        meta: { title: '资产类别', icon: 'table' }
+      },
+      {
+        path: 'deptlist',
+        name: 'deptlist',
+        component: () => import('@/views/FAManage/TypeList/index'),
+        meta: { title: '部门管理', icon: 'table' }
       }
     ]
   },

@@ -66,11 +66,7 @@ export default {
       }
     }
     const validatePassword = (rule, value, callback) => {
-      if (value.length < 6||value.length>20) {
-        callback(new Error('密码长度在6~20个字符'))
-      } else {
-        callback()
-      }
+      callback()
     }
     return {
       loginForm: {
@@ -113,6 +109,9 @@ export default {
             this.$router.push({ path: this.redirect || '/' })
             this.loading = false
           }).catch(error => {
+
+            this.$forceUpdate()
+
             this.$message.error("用户名或密码错误!")
             this.loading = false
           })

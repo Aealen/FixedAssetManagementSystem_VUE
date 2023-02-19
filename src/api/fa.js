@@ -36,3 +36,29 @@ export function getAllType() {
     method: 'get'
   })
 }
+export function getTypeCount() {
+  return request({
+    url: '/fa/getTypeCount/',
+    method: 'get'
+  })
+}
+export function getAllTypeByPage(data) {
+  return request({
+    url: '/fa/getAllTypeByPage/',
+    method: 'post',
+    data
+  })
+}
+export function updateTypeInfo(data) {
+  return request({
+    url: '/fa/updateTypeInfo/',
+    method: 'post',
+    data
+  })
+}
+export function addType(data) {
+  return request({
+    url: '/fa/addType?typename=' + data,
+    method: 'post'
+  })
+}

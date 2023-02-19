@@ -199,7 +199,8 @@ export default {
       }).then(() => {
         delFa(fid).then(resp => {
           if (resp.code === 200) {
-            this.$router.go(0)
+            this.fetchData()
+            this.$forceUpdate()
             this.$message({
               type: 'success',
               message: '删除成功!'

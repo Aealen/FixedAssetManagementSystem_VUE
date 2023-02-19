@@ -205,7 +205,8 @@ export default {
         if (resp.code === 200) {
           this.showUserDeptDialog = false
           this.$message.success('修改成功!')
-          this.$router.go(0)
+          this.fetchData()
+          this.$forceUpdate()
         } else {
           this.$message.error(resp.msg)
         }
@@ -216,7 +217,8 @@ export default {
         if (resp.code === 200) {
           this.showUserRoleDialog = false
           this.$message.success('修改成功!')
-          this.$router.go(0)
+          this.fetchData()
+          this.$forceUpdate()
         } else {
           this.$message.error(resp.msg)
         }
