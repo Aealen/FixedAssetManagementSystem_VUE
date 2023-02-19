@@ -143,14 +143,14 @@ export default {
     }
 
     const validatePasswordVerify = (rule, value, callback) => {
-      if (value!=this.loginForm.password) {
+      if (value != this.loginForm.password) {
         callback(new Error('两次密码不一致'))
       } else {
         callback()
       }
     }
     const validatePassword = (rule, value, callback) => {
-      if (value.length < 6||value.length>20) {
+      if (value.length < 6 || value.length > 20) {
         callback(new Error('密码长度在6~20个字符'))
       } else {
         callback()
@@ -173,11 +173,11 @@ export default {
       selRole: null,
       loginRules: {
         username: [
-          { required: true, trigger: 'blur', message:'不能为空' },
+          { required: true, trigger: 'blur', message: '不能为空' },
           { min: 3, max: 20, message: '长度在 3 到 20 个字符', trigger: 'blur' }
         ],
         nickname: [
-          { required: true, trigger: 'blur', message:'不能为空' },
+          { required: true, trigger: 'blur', message: '不能为空' },
           { min: 3, max: 20, message: '长度在 3 到 20 个字符', trigger: 'blur' }
         ],
         password: [{ required: true, trigger: 'blur', validator: validatePassword }],
@@ -185,7 +185,7 @@ export default {
           { required: true, trigger: 'blur', validator: validatePasswordVerify }
         ],
         phoneNum: [
-          { required: true, message: '请输入联系电话', trigger: 'blur' },
+          { required: true, message: '请输入联系电话', trigger: 'blur' }
         ],
         email: [
           { required: true, message: '请输入邮箱地址', trigger: 'change' },
@@ -215,6 +215,7 @@ export default {
         .then(resp => {
           if (resp.code === 200) {
             this.deptOptions = resp.data
+            this.deptOptions.splice(0, 1)
           } else {
             this.$message.error(resp.msg)
           }

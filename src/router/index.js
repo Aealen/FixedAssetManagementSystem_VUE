@@ -109,7 +109,7 @@ export const constantRoutes = [
       {
         path: 'deptlist',
         name: 'deptlist',
-        component: () => import('@/views/FAManage/TypeList/index'),
+        component: () => import('@/views/FAManage/DeptList/index'),
         meta: { title: '部门管理', icon: 'table' }
       }
     ]

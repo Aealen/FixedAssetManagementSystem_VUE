@@ -70,8 +70,8 @@ export default {
     }
     return {
       loginForm: {
-        username: 'Aealen',
-        password: '122122'
+        username: '',
+        password: ''
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
@@ -112,7 +112,7 @@ export default {
 
             this.$forceUpdate()
 
-            this.$message.error("用户名或密码错误!")
+            // this.$message.error("用户名或密码错误!")
             this.loading = false
           })
         } else {
