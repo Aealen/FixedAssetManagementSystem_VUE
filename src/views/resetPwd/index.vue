@@ -34,7 +34,7 @@
           auto-complete="on"
           style="width: 50%"
         />
-        <el-button style="float: right;height: 100%;vertical-align: middle;line-height: 1" type="primary" :loading="sendCodeLoading">发送验证码</el-button>
+        <el-button style="float: right;height: 100%;vertical-align: middle;line-height: 1" type="primary" :loading="sendCodeLoading" @click="sendMailCode">发送验证码</el-button>
       </el-form-item>
 
       <el-form-item prop="password">
@@ -76,7 +76,7 @@
         </span>
       </el-form-item>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleRegist">提交</el-button>
+      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleReset">提交</el-button>
 
       <div class="tips">
         <span style="margin-right:20px;" @click="$router.push('/login')">前往登陆</span>
@@ -87,8 +87,7 @@
 </template>
 
 <script>
-import { getAllDepts } from '@/api/depts'
-import { regist } from '@/api/user'
+import { changePwd, checkCode, sendCode } from '@/api/user'
 
 export default {
   name: 'Regist',
@@ -96,13 +95,6 @@ export default {
     const validatePasswordVerify = (rule, value, callback) => {
       if (value !== this.loginForm.password) {
         callback(new Error('两次密码不一致'))
-      } else {
-        callback()
-      }
-    }
-    const validatePassword = (rule, value, callback) => {
-      if (value.length < 6 || value.length > 20) {
-        callback(new Error('密码长度在6~20个字符'))
       } else {
         callback()
       }
@@ -117,17 +109,15 @@ export default {
       sendCodeLoading: false,
 
       loginRules: {
-        password: [{ required: true, trigger: 'blur', validator: validatePassword }],
         passwordVerify: [
           { required: true, trigger: 'blur', validator: validatePasswordVerify }
         ],
         code: [
-          { required: true, message: '请输入验证码', trigger: 'blur' },
-          { max: 5, min: 5, message: '验证码长度为5', trigger: 'blur' }
+          { required: true, message: '请输入验证码', trigger: 'blur' }
         ],
         email: [
-          { required: true, message: '请输入邮箱地址', trigger: 'change' },
-          { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
+          { required: true, message: '请输入邮箱地址', trigger: 'blur' },
+          { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }
         ]
 
       },
@@ -149,11 +139,28 @@ export default {
   },
   methods: {
 
-    sendCode(){
-      this.sendCodeLoading=true
-
+    sendMailCode() {
+      this.sendCodeLoading = true
+      sendCode({ email: this.loginForm.email, code: null }).then(resp => {
+        if (resp.code === 200) {
+          // 发送成功
+          this.$message.success('邮件发送成功,请在五分钟内使用验证码!')
+        }
+      })
+      this.sendCodeLoading = false
     },
-
+    checkMailCode() {
+      // 校验Code是否正确
+      checkCode({ email: this.loginForm.email, code: this.loginForm.code }).then(resp => {
+        if (resp.code === 200) {
+          this.$message.success(resp.msg)
+          return true
+        } else {
+          this.$message.error(resp.msg)
+          return false
+        }
+      })
+    },
     showPwd() {
       if (this.passwordType === 'password') {
         this.passwordType = ''
@@ -164,19 +171,27 @@ export default {
         this.$refs.password.focus()
       })
     },
-    handleRegist() {
-      this.$refs.loginForm.validate(valid => {
-        if (valid) {
-          this.loginForm.deptId = this.selDept
-
-          regist(this.loginForm).then(resp => {
-            if (resp.code === 200) {
-              this.$message.success('注册成功!')
-              this.$router.push('/login')
+    handleReset() {
+      checkCode({ email: this.loginForm.email, code: this.loginForm.code }).then(resp => {
+        if (resp.code === 200) {
+          this.$refs.loginForm.validate(valid => {
+            if (valid) {
+              // 重置密码
+              changePwd({ email: this.loginForm.email, password: this.loginForm.password }).then(res => {
+                if (res.code === 200) {
+                  this.$message.success('密码已更新,请登陆...')
+                  this.$router.push('/login')
+                } else {
+                  this.$message.error(res.msg)
+                }
+              })
+            } else {
+              console.log('检查输入!!')
+              return false
             }
           })
         } else {
-          console.log('检查输入!!')
+          this.$message.error(resp.msg)
           return false
         }
       })

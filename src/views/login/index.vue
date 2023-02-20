@@ -19,8 +19,9 @@
           tabindex="1"
           auto-complete="on"
         />
-      </el-form-item>
 
+      </el-form-item>
+      {{loginForm.username}}
       <el-form-item prop="password">
         <span class="svg-container">
           <svg-icon icon-class="password" />
@@ -40,6 +41,7 @@
           <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
         </span>
       </el-form-item>
+      {{loginForm.password}}
 
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
 

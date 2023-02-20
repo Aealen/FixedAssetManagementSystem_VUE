@@ -87,4 +87,25 @@ export function logout() {
   })
 }
 
+export function sendCode(data) {
+  return request({
+    url: '/user/auth/sendResetPasswordMail',
+    method: 'post',
+    data
+  })
+}
+export function checkCode(data) {
+  return request({
+    url: '/user/auth/checkCode',
+    method: 'post',
+    data
+  })
+}
 
+export function changePwd(data) {
+  return request({
+    url: '/user/auth/changePwd',
+    method: 'post',
+    data
+  })
+}
