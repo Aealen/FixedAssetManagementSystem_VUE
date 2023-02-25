@@ -62,3 +62,11 @@ export function addType(data) {
     method: 'post'
   })
 }
+
+export function updatefa(data) {
+  return request({
+    url: '/fa/updatefa',
+    method: 'post',
+    data
+  })
+}

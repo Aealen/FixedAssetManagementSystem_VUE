@@ -54,7 +54,7 @@
 
       <el-table-column align="center" prop="created_at" label="操作" width="350">
         <template slot-scope="scope">
-          <el-link class="text_link" type="primary" @click="showUserDrawer=true;currSelUserId=scope.row.id;showUserManagerDrawer()">详细信息</el-link>
+          <el-link class="text_link" type="primary" @click="showFADrawer=true;currSelFaId=scope.row.id;showFAInfoDraw()">详细信息</el-link>
           <el-dropdown>
             <el-link class="el-dropdown-link" type="primary">
               操作列表<i class="el-icon-arrow-down el-icon--right" />
@@ -78,50 +78,13 @@
       @current-change="handleChangePage"
     />
 
-    <UserManagerDrawer :user-id="currSelUserId" :show-user-drawer="showUserDrawer" @closeUserManagerDrawer="closeUserMangerDrawer()" />
-
-    <el-dialog
-      title="角色选择"
-      :visible.sync="showUserRoleDialog"
-      width="20%"
-    >
-      <el-select v-model="selRole" placeholder="请选择">
-        <el-option
-          v-for="item in roleOptions"
-          :key="item.rid"
-          :label="item.name"
-          :value="item.rid"
-        />
-      </el-select>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="handleDialogClose">取 消</el-button>
-        <el-button type="primary" @click="setUR();">确 定</el-button>
-      </span>
-    </el-dialog>
-    <el-dialog
-      title="部门选择"
-      :visible.sync="showUserDeptDialog"
-      width="20%"
-    >
-      <el-select v-model="selDept" placeholder="请选择">
-        <el-option
-          v-for="item in deptOptions"
-          :key="item.did"
-          :label="item.name"
-          :value="item.did"
-        />
-      </el-select>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="handleDialogClose">取 消</el-button>
-        <el-button type="primary" @click="setDept();">确 定</el-button>
-      </span>
-    </el-dialog>
+    <FAInfoDraw :f-a-id="currSelFaId" :show-f-a-drawer="showFADrawer" @closeFAInfoDraw="closeFAInfoDraw()" />
 
   </div>
 </template>
 
 <script>
-import UserManagerDrawer from '@/components/UserManagerDraw/index'
+import FAInfoDraw from '@/components/FAInfoDraw/index'
 import request from '@/utils/request'
 import { delFa, getFaCount } from '@/api/fa'
 
@@ -137,7 +100,7 @@ export default {
     }
   },
   components: {
-    UserManagerDrawer
+    FAInfoDraw
   },
   data() {
     return {
@@ -149,18 +112,8 @@ export default {
       },
       sumCount: 0,
       listLoading: true,
-      showUserDrawer: false,
-      currSelUserId: 0,
-
-      showUserRoleDialog: false,
-      roleOptions: null,
-      selRole: null,
-      selUid: null,
-
-      showUserDeptDialog: false,
-      deptOptions: null,
-      selDept: null
-
+      showFADrawer: false,
+      currSelFaId: 0
     }
   },
   created() {
@@ -180,15 +133,6 @@ export default {
         this.sumCount = response.data
       }).catch(error => {
         this.$message.error(error)
-      })
-    },
-
-    handleDialogClose() {
-      this.showUserRoleDialog = false
-      this.showUserDeptDialog = false
-      this.$message({
-        type: 'info',
-        message: '已取消操作'
       })
     },
     delFixedAsset(fid) {
@@ -239,10 +183,14 @@ export default {
         this.listLoading = false
       })
     },
-    closeUserMangerDrawer() {
-      console.log('parent:' + this.showUserDrawer)
-      this.showUserDrawer = false
-      console.log('parent:' + this.showUserDrawer)
+    showFAInfoDraw() {
+      this.showFADrawer = true
+      console.log(this.showFADrawer)
+    },
+    async closeFAInfoDraw() {
+      this.showFADrawer = false
+      await this.fetchData()
+      this.$forceUpdate()
     }
   }
 }
