@@ -15,6 +15,13 @@ export function addFa(data) {
   })
 }
 
+export function getFaByID(id) {
+  return request({
+    url: '/fa/queryFaByID/' + id,
+    method: 'post'
+  })
+}
+
 export function queryFaByPage(data) {
   return request({
     url: '/fa/getFaCount',

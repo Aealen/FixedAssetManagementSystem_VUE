@@ -99,8 +99,7 @@
 </template>
 
 <script>
-import request from '@/utils/request'
-import { getAllType, updatefa } from '@/api/fa'
+import { getAllType, getFaByID, updatefa } from '@/api/fa'
 import { getAllDepts } from '@/api/depts'
 import { getAllCustodian } from '@/api/user'
 
@@ -135,10 +134,7 @@ export default {
   },
   methods: {
     getData() {
-      request({
-        url: '/fa/queryFaByID/' + this.FAId,
-        method: 'post'
-      }).then(resp => {
+      getFaByID(this.FAId).then(resp => {
         if (resp.code !== 200) {
           this.$message.error(resp.msg)
         }
