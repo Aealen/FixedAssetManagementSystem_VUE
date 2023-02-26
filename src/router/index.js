@@ -59,30 +59,34 @@ export const constantRoutes = [
     redirect: '/dashboard',
     children: [{
       path: 'dashboard',
-      name: 'Dashboard',
+
       component: () => import('@/views/dashboard/index'),
       meta: { title: '仪表盘', icon: 'dashboard' }
     }]
-  },
+  }
+
+]
+
+export const asyncRoutes = [
 
   {
     path: '/user',
     component: Layout,
     redirect: '/user/table',
-    name: 'Example',
-    meta: { title: '用户管理', icon: 'el-icon-s-help' },
+
+    meta: { title: '用户管理', icon: 'el-icon-s-help', roles: ['1'] },
     children: [
       {
         path: 'list',
-        name: 'UserList',
+
         component: () => import('@/views/UserManage/index'),
-        meta: { title: '用户列表', icon: 'table' }
+        meta: { title: '用户列表', icon: 'table', roles: ['1'] }
       },
       {
         path: 'tree',
-        name: 'Tree',
+
         component: () => import('@/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree' }
+        meta: { title: 'Tree', icon: 'tree', roles: ['1'] }
       }
     ]
   },
@@ -90,32 +94,32 @@ export const constantRoutes = [
     path: '/fa',
     component: Layout,
     redirect: '/fa/table',
-    name: 'FA',
-    meta: { title: '资产管理', icon: 'el-icon-s-help' },
+
+    meta: { title: '资产管理', icon: 'el-icon-s-help', roles: ['1'] },
     children: [
       {
         path: 'list',
-        name: 'FAList',
+
         component: () => import('@/views/FAManage/index'),
-        meta: { title: '资产列表', icon: 'table' }
+        meta: { title: '资产列表', icon: 'table', roles: ['1'] }
       },
       {
         path: 'add',
-        name: 'AddFa',
+
         component: () => import('@/views/FAManage/AddFa/index'),
-        meta: { title: '新增资产', icon: 'table' }
+        meta: { title: '新增资产', icon: 'table', roles: ['1'] }
       },
       {
         path: 'typelist',
-        name: 'typelist',
+
         component: () => import('@/views/FAManage/TypeList/index'),
-        meta: { title: '资产类别', icon: 'table' }
+        meta: { title: '资产类别', icon: 'table', roles: ['1'] }
       },
       {
         path: 'deptlist',
-        name: 'deptlist',
+
         component: () => import('@/views/FAManage/DeptList/index'),
-        meta: { title: '部门管理', icon: 'table' }
+        meta: { title: '部门管理', icon: 'table', roles: ['1'] }
       }
     ]
   },
@@ -123,14 +127,14 @@ export const constantRoutes = [
     path: '/order',
     component: Layout,
     redirect: '/order/table',
-    name: 'Order',
-    meta: { title: '订单管理', icon: 'el-icon-s-help' },
+
+    meta: { title: '订单管理', icon: 'el-icon-s-help', roles: ['1'] },
     children: [
       {
         path: 'list',
-        name: 'OrderList',
+
         component: () => import('@/views/OrderManage/index'),
-        meta: { title: '订单列表', icon: 'table' }
+        meta: { title: '订单列表', icon: 'table', roles: ['1'] }
       }
     ]
   },
@@ -139,8 +143,8 @@ export const constantRoutes = [
     component: Layout,
     children: [
       {
-        path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
-        meta: { title: 'External Link', icon: 'link' }
+        path: 'https://github.com/Aealen/FixedAssetManagementSystem',
+        meta: { title: 'Github仓库', icon: 'link' }
       }
     ]
   },

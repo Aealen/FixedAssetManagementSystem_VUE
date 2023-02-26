@@ -6,7 +6,8 @@ const getDefaultState = () => {
   return {
     token: getToken(),
     username: '',
-    avatar: ''
+    avatar: '',
+    roles: []
   }
 }
 
@@ -24,6 +25,9 @@ const mutations = {
   },
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar
+  },
+  SET_ROLES: (state, roles) => {
+    state.roles = roles
   }
 }
 
@@ -87,6 +91,7 @@ const actions = {
         sessionStorage.setItem('rid', response.data.roleId)
         commit('SET_NAME', username)
         commit('SET_AVATAR', avatar)
+        commit('SET_ROLES', response.data.roleId)
         resolve(data)
       }).catch(error => {
         reject(error)

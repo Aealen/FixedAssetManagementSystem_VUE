@@ -30,16 +30,37 @@ router.beforeEach(async(to, from, next) => {
       if (hasGetUserInfo) {
         next()
       } else {
-        try {
-          // get user info
-          await store.dispatch('user/getCurrUserViewByToken')
+        // 权限判定正题 ↓
+        const hasRoles = store.getters.roles && store.getters.roles.length > 0
+        if (hasRoles) {
           next()
-        } catch (error) {
-          // remove token and go to login page to re-login
-          await store.dispatch('user/resetToken')
-          Message.error(error || 'Has Error relate to Token')
-          next(`/login?redirect=${to.path}`)
-          NProgress.done()
+        } else {
+          try {
+            // get user info
+            // await store.dispatch('user/getCurrUserViewByToken')
+            const { roles } = await store.dispatch('user/getCurrUserViewByToken')
+            // 通过权限获取路由
+            console.log(roles)
+            console.log(sessionStorage.getItem('rid'))
+            const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
+
+            // 更新路由
+            // router.options.routes = store.getters.permission_routes
+            // router.matcher = new Router().matcher
+            // 动态添加可访问路由
+
+            router.addRoutes(accessRoutes)
+            console.log(store)
+
+            // next({...to,replace:true})
+            next()
+          } catch (error) {
+            // remove token and go to login page to re-login
+            await store.dispatch('user/resetToken')
+            Message.error(error || 'Has Error relate to Token')
+            next(`/login?redirect=${to.path}`)
+            NProgress.done()
+          }
         }
       }
     }
