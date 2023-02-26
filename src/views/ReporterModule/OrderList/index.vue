@@ -36,7 +36,7 @@
           {{ scope.row.faPrice }}
         </template>
       </el-table-column>
-      <el-table-column label="报修人" width="160" align="center">
+      <el-table-column  label="报修人" width="160" align="center">
         <template slot-scope="scope">
           {{ scope.row.orderReporterId }}. {{ scope.row.orderReporter }}
         </template>
@@ -46,12 +46,12 @@
           {{ scope.row.orderCustodianId }}. {{ scope.row.orderCustodian }}
         </template>
       </el-table-column>
-      <el-table-column label="维修员" width="180" align="center">
+      <el-table-column label="维修员" width="200" align="center">
         <template slot-scope="scope">
           {{ scope.row.orderWorker }}. {{ scope.row.orderWorkerNickname }}
         </template>
       </el-table-column>
-      <el-table-column label="订单状态" width="160" align="center">
+      <el-table-column label="订单状态" width="130" align="center">
         <template slot-scope="scope">
           <span v-if="scope.row.orderStatus===0">未处理</span>
           <span v-if="scope.row.orderStatus===1">未结算</span>
@@ -116,7 +116,14 @@
 
 <script>
 import OrderInfoDrawer from '@/components/OrderInfoDrawer/index'
-import { delOrder, getOrderByPage, getOrderCount, updateOrderStatus } from '@/api/order'
+import {
+  delOrder,
+  getOrderByPage,
+  getOrderByPageAndRole,
+  getOrderCount,
+  getOrderCountByRole,
+  updateOrderStatus
+} from '@/api/order'
 
 export default {
   filters: {
@@ -134,6 +141,7 @@ export default {
   },
   data() {
     return {
+      // 区分报修员和维修员
       list: null,
       pageParams: {
         keyword: null,
@@ -170,13 +178,14 @@ export default {
 
     fetchData() {
       this.listLoading = true
-      getOrderCount().then(response => {
-        // console.log(response)
-        if (response.code !== 200) {
-          this.$message.error(response.msg)
-        }
-        this.handleChangePage(this.pageParams.currPage)
 
+      // 区分报修员2 和维修员3 和 负责人4  session中的rid
+      getOrderCountByRole(sessionStorage.getItem('rid'), sessionStorage.getItem('uid')).then(response => {
+        // console.log(response)
+        if (response.code === 200) {
+          this.handleChangePage(this.pageParams.currPage)
+        }
+        console.log('sum:' + response.data)
         this.sumCount = response.data
       }).catch(error => {
         this.$message.error(error)
@@ -211,10 +220,12 @@ export default {
       })
     },
     handleChangePage(val) {
-      getOrderByPage({
+      getOrderByPageAndRole({
         'keyword': this.pageParams.keyword,
         'page': val,
-        'perPage': this.pageParams.perPage
+        'perPage': this.pageParams.perPage,
+        'rid': sessionStorage.getItem('rid'),
+        'uid': sessionStorage.getItem('uid')
       }
       ).then(resp => {
         if (resp.code !== 200) {
@@ -245,8 +256,8 @@ export default {
     },
     async closeOrderInfoDraw() {
       this.showOrderDrawer = false
-      // await this.fetchData()
-      // this.$forceUpdate()
+      await this.fetchData()
+      this.$forceUpdate()
     }
   }
 }

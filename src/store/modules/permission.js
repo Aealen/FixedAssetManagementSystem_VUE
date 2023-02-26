@@ -12,7 +12,7 @@ function hasPermission(roles, route) {
     // return sessionStorage.getItem('rid') === route.meta.roles
     for (var item in route.meta.roles) {
 
-      console.log(route.meta.roles[item])
+      // console.log(route.meta.roles[item])
       if (route.meta.roles[item] === sessionStorage.getItem('rid')) { return true }
     }
     return false

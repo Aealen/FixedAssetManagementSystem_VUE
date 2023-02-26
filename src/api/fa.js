@@ -29,6 +29,13 @@ export function queryFaByPage(data) {
     data
   })
 }
+export function queryFaByTDID(data) {
+  return request({
+    url: '/fa/queryFaByTDID',
+    method: 'post',
+    data
+  })
+}
 
 export function delFa(fid) {
   return request({

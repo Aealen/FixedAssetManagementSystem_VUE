@@ -6,6 +6,20 @@ export function getOrderCount() {
     method: 'get'
   })
 }
+export function getOrderCountByRole(rid, uid) {
+  return request({
+    url: '/order/getCountByRole/' + rid + '/' + uid,
+    method: 'get'
+  })
+}
+
+export function getOrderByPageAndRole(data) {
+  return request({
+    url: '/order/getOrderByPageAndRole',
+    method: 'post',
+    data
+  })
+}
 
 export function getOrderByPage(data) {
   return request({
@@ -33,5 +47,13 @@ export function updateOrderStatus(id, status) {
   return request({
     url: '/order/updateOrderStatus/' + id + '/' + status,
     method: 'get'
+  })
+}
+
+export function addOrder(data) {
+  return request({
+    url: '/order/addOrder/',
+    method: 'post',
+    data
   })
 }

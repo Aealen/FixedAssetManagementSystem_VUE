@@ -128,13 +128,25 @@ export const asyncRoutes = [
     component: Layout,
     redirect: '/order/table',
 
-    meta: { title: '订单管理', icon: 'el-icon-s-help', roles: ['1'] },
+    meta: { title: '订单管理', icon: 'el-icon-s-help', roles: ['1', '2', '3', '4'] },
     children: [
       {
         path: 'list',
 
         component: () => import('@/views/OrderManage/index'),
         meta: { title: '订单列表', icon: 'table', roles: ['1'] }
+      },
+      {
+        path: 'addOrder',
+
+        component: () => import('@/views/ReporterModule/AddOrder/index'),
+        meta: { title: '新增订单', icon: 'table', roles: ['1', '2'] }
+      },
+      {
+        path: 'reporterOrderList',
+
+        component: () => import('@/views/ReporterModule/OrderList/index'),
+        meta: { title: '我的订单', icon: 'table', roles: ['1', '2', '3', '4'] }
       }
     ]
   },

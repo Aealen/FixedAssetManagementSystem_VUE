@@ -68,6 +68,13 @@
         <el-descriptions-item span="4">
           <template slot="label">
             <i class="el-icon-user" />
+            维修员
+          </template>
+          <span>{{ currOrderData.orderWorker }}. {{ currOrderData.orderWorkerNickname }}</span>
+        </el-descriptions-item>
+        <el-descriptions-item span="4">
+          <template slot="label">
+            <i class="el-icon-user" />
             报修时间
           </template>
           <span>{{ currOrderData.orderUpTime }}</span>

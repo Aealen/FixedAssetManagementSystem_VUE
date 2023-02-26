@@ -40,8 +40,8 @@ router.beforeEach(async(to, from, next) => {
             // await store.dispatch('user/getCurrUserViewByToken')
             const { roles } = await store.dispatch('user/getCurrUserViewByToken')
             // 通过权限获取路由
-            console.log(roles)
-            console.log(sessionStorage.getItem('rid'))
+            // console.log(roles)
+            // console.log(sessionStorage.getItem('rid'))
             const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
 
             // 更新路由
@@ -50,7 +50,7 @@ router.beforeEach(async(to, from, next) => {
             // 动态添加可访问路由
 
             router.addRoutes(accessRoutes)
-            console.log(store)
+            // console.log(store)
 
             // next({...to,replace:true})
             next()
