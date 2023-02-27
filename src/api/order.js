@@ -29,6 +29,13 @@ export function getOrderByPage(data) {
   })
 }
 
+export function getWorker(did) {
+  return request({
+    url: '/order/getWorker/' + did,
+    method: 'post'
+  })
+}
+
 export function getOrderByID(id) {
   return request({
     url: '/order/getOrderByID/' + id,

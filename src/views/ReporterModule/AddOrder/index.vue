@@ -10,7 +10,7 @@
           style="width: 50%"
         /></el-form-item>
       <el-form-item label="固定资产类别(可选)">
-        <el-select v-model="form.faType" placeholder="请选择固定资产类别...">
+        <el-select v-model="form.faType" placeholder="请选择固定资产类别..." @change="getFaInfo">
           <el-option label="所有类别" value="0" />
           <el-option
             v-for="item in typeOption"
@@ -21,7 +21,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="固定资产部门(可选)">
-        <el-select v-model="form.faDept" default-first-option filterable placeholder="请选择固定资产所属部门...">
+        <el-select v-model="form.faDept" placeholder="请选择固定资产所属部门..." @change="getFaInfo()">
           <el-option label="所有部门" value="0" />
           <el-option
             v-for="item in deptOption"
@@ -33,11 +33,21 @@
         </el-select>
       </el-form-item>
       <el-form-item label="固定资产">
-        <el-select v-model="form.faId" placeholder="请选择固定资产" :rules="{ required: true, message: '固定资产不能为空',trigger:'blur'}">
+        <el-select v-model="form.faId" placeholder="请选择固定资产" :rules="{ required: true, message: '固定资产不能为空',trigger:'blur'}" @change="getWorker()">
           <el-option
             v-for="item in faOption"
             :key="item.id"
             :label="item.faName"
+            :value="item.id"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="指派维修员">
+        <el-select v-model="form.faWorker" placeholder="请选择维修员" :rules="{ required: true, message: '不能为空',trigger:'blur'}" @focus="getWorker()">
+          <el-option
+            v-for="item in workerOption"
+            :key="item.id"
+            :label="item.nickname"
             :value="item.id"
           />
         </el-select>
@@ -47,13 +57,14 @@
         <el-button type="primary" @click="onSubmit">提交</el-button>
       </el-form-item>
     </el-form>
+
   </div>
 </template>
 
 <script>
-import { getAllType, queryFaByTDID } from '@/api/fa'
+import { getAllType, getFaByID, queryFaByTDID } from '@/api/fa'
 import { getAllDepts } from '@/api/depts'
-import { addOrder } from '@/api/order'
+import { addOrder, getWorker } from '@/api/order'
 
 export default {
   data() {
@@ -62,21 +73,49 @@ export default {
         desc: '',
         faType: null,
         faDept: null,
+        faWorker: null,
         faId: null
       },
-      typeOption: [],
-      deptOption: [],
-      faOption: []
+      typeOption: null,
+      deptOption: null,
+      workerOption: null,
+      faOption: null
     }
   },
   async mounted() {
-    await this.getFaType()
-    await this.getFaDept()
+    if (this.typeOption === null) { await this.getFaType() }
+    if (this.deptOption === null) { await this.getFaDept() }
+    await this.getFaInfo()
   },
-  updated() {
-    this.getFaInfo()
+  async updated() {
+    // await this.getFaInfo()
   },
   methods: {
+
+    getWorker() {
+      if (this.form.faDept === null) {
+        // 部门为空 则只能 用faID 间接查询
+        if (this.form.faId !== null) {
+          getFaByID(this.form.faId).then(resp => {
+            if (resp.code === 200) {
+              getWorker(resp.data.faDid).then(res => {
+                if (res.code === 200) {
+                  this.workerOption = res.data
+                }
+              })
+            }
+          })
+        } else {
+          return
+        }
+      } else {
+        getWorker(this.form.faDept).then(resp => {
+          if (resp.code === 200) {
+            this.workerOption = resp.data
+          }
+        })
+      }
+    },
     getFaType() {
       getAllType().then(resp => {
         if (resp.code === 200) {
@@ -95,11 +134,12 @@ export default {
       queryFaByTDID({ tid: this.form.faType, did: this.form.faDept }).then(resp => {
         if (resp.code === 200) {
           this.faOption = resp.data
+          // this.getWorker(this.form.faId, this.form.faDept)
         }
       })
     },
     onSubmit() {
-      addOrder({ fa: this.form.faId, description: this.form.desc, reporter: sessionStorage.getItem('uid') }).then(resp => {
+      addOrder({ fa: this.form.faId, worker:this.form.faWorker, description: this.form.desc, reporter: sessionStorage.getItem('uid') }).then(resp => {
         if (resp.code === 200) {
           this.$message.success({ message: '提交成功！请勿重复提交', duration: 5000 })
         }
