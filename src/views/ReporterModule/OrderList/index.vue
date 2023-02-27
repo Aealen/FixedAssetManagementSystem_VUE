@@ -36,12 +36,12 @@
           {{ scope.row.faPrice }}
         </template>
       </el-table-column>
-      <el-table-column  label="报修人" width="160" align="center">
+      <el-table-column label="报修人" width="145" align="center">
         <template slot-scope="scope">
           {{ scope.row.orderReporterId }}. {{ scope.row.orderReporter }}
         </template>
       </el-table-column>
-      <el-table-column label="负责人" width="160" align="center">
+      <el-table-column label="负责人" width="145" align="center">
         <template slot-scope="scope">
           {{ scope.row.orderCustodianId }}. {{ scope.row.orderCustodian }}
         </template>
@@ -51,11 +51,12 @@
           {{ scope.row.orderWorker }}. {{ scope.row.orderWorkerNickname }}
         </template>
       </el-table-column>
-      <el-table-column label="订单状态" width="130" align="center">
+      <el-table-column label="订单状态" width="80" align="center">
         <template slot-scope="scope">
-          <span v-if="scope.row.orderStatus===0">未处理</span>
-          <span v-if="scope.row.orderStatus===1">未结算</span>
-          <span v-if="scope.row.orderStatus===2">已完成</span>
+          <el-tag v-if="scope.row.orderStatus===0">未处理</el-tag>
+          <el-tag v-if="scope.row.orderStatus===1" type="warning">未结算</el-tag>
+          <el-tag v-if="scope.row.orderStatus===2" type="success">已完成</el-tag>
+          <el-tag v-if="scope.row.orderStatus===3" type="danger">待审核</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="发起时间" width="160" align="center">
@@ -64,20 +65,22 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" prop="created_at" label="操作" width="250">
+      <el-table-column align="left" prop="created_at" label="操作" width="355">
         <template slot-scope="scope">
-          <el-link class="text_link" type="primary" @click="showOrderDrawer=true;currSelOrderId=scope.row.id;showOrderInfoDraw()">详细信息</el-link>
-          <el-dropdown>
-            <el-link class="el-dropdown-link" type="primary">
-              操作列表<i class="el-icon-arrow-down el-icon--right" />
-            </el-link>
+          <el-button type="primary" @click="showOrderDrawer=true;currSelOrderId=scope.row.id;showOrderInfoDraw()">详细信息</el-button>
+          <el-button type="danger" @click="delFixedAsset(scope.row.id)">删除此项</el-button>
+          <el-button v-if="scope.row.orderStatus===0" type="warning" @click="currOid=scope.row.id;selStatus=1;updateStatus()">处理完成</el-button>
+          <el-button v-if="scope.row.orderStatus===1&&currRid===2" type="success" @click="currOid=scope.row.id;selStatus=1;showPayDialog=true;">订单结算</el-button>
+          <!--          <el-dropdown>-->
+          <!--            <el-link class="el-dropdown-link" type="primary">-->
+          <!--              操作列表<i class="el-icon-arrow-down el-icon&#45;&#45;right" />-->
+          <!--            </el-link>-->
+          <!--            <el-dropdown-menu slot="dropdown">-->
+          <!--              <el-dropdown-item><span @click="delFixedAsset(scope.row.id)">删除此项</span></el-dropdown-item>-->
+          <!--              <el-dropdown-item><span @click="currOid=scope.row.id;selStatus=scope.row.orderStatus;showStatusDialog=true;">处理完成</span></el-dropdown-item>-->
 
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item><span @click="delFixedAsset(scope.row.id)">删除此项</span></el-dropdown-item>
-              <el-dropdown-item><span @click="currOid=scope.row.id;selStatus=scope.row.orderStatus;showStatusDialog=true;">修改状态</span></el-dropdown-item>
-
-            </el-dropdown-menu>
-          </el-dropdown>
+          <!--            </el-dropdown-menu>-->
+          <!--          </el-dropdown>-->
         </template>
       </el-table-column>
     </el-table>
@@ -93,18 +96,12 @@
 
     <OrderInfoDrawer :order-i-d="currSelOrderId" :show-order-drawer="showOrderDrawer" @closeOrderInfoDraw="closeOrderInfoDraw()" />
     <el-dialog
-      title="订单状态更新"
-      :visible.sync="showStatusDialog"
+      title="订单支付"
+      :visible.sync="showPayDialog"
       width="20%"
     >
-      <el-select v-model="selStatus" placeholder="请选择">
-        <el-option
-          v-for="item in statusOption"
-          :key="item.key"
-          :label="item.value"
-          :value="item.key"
-        />
-      </el-select>
+      TODO 余额：xxxx
+      确认支付。。。  余额不足 支付失败
       <span slot="footer" class="dialog-footer">
         <el-button @click="handleDialogClose">取 消</el-button>
         <el-button type="primary" @click="updateStatus();">确 定</el-button>
@@ -139,6 +136,7 @@ export default {
   components: {
     OrderInfoDrawer
   },
+
   data() {
     return {
       // 区分报修员和维修员
@@ -148,11 +146,12 @@ export default {
         currPage: 1,
         perPage: 10
       },
+      currRid: 0,
       sumCount: 0,
       listLoading: true,
       showOrderDrawer: false,
       currSelOrderId: 0,
-      showStatusDialog: false,
+      showPayDialog: false,
       selStatus: null,
       currOid: null,
       statusOption: [
@@ -173,6 +172,7 @@ export default {
   },
   created() {
     this.fetchData()
+    this.currRid = sessionStorage.getItem('rid')
   },
   methods: {
 
@@ -231,7 +231,20 @@ export default {
         if (resp.code !== 200) {
           this.$message.error(resp.msg)
         }
-        this.list = resp.data
+        if (sessionStorage.getItem('rid') === '3') {
+          // 维修员 删除待审核订单
+          this.list = resp.data
+          for (const index in this.list) {
+            console.log(this.list[index].orderStatus)
+            if (this.list[index].orderStatus === 3) {
+
+              // 待审核
+              this.list.splice(index, 1)
+            }
+          }
+        } else {
+          this.list = resp.data
+        }
         this.listLoading = false
       }).catch(err => {
         console.log(err)
@@ -247,7 +260,7 @@ export default {
       })
     },
     async handleDialogClose() {
-      this.showStatusDialog = false
+      this.showPayDialog = false
       await this.fetchData()
       this.$forceUpdate()
     },

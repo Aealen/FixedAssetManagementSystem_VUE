@@ -20,6 +20,13 @@ export function getOrderByPageAndRole(data) {
     data
   })
 }
+export function queryByPageForCustodian(data) {
+  return request({
+    url: '/order/queryByPageForCustodian',
+    method: 'post',
+    data
+  })
+}
 
 export function getOrderByPage(data) {
   return request({

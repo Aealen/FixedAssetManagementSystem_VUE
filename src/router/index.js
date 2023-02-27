@@ -134,7 +134,7 @@ export const asyncRoutes = [
         path: 'list',
 
         component: () => import('@/views/OrderManage/index'),
-        meta: { title: '订单列表', icon: 'table', roles: ['1'] }
+        meta: { title: '订单列表', icon: 'table', roles: ['1','4'] }
       },
       {
         path: 'addOrder',
@@ -146,7 +146,13 @@ export const asyncRoutes = [
         path: 'reporterOrderList',
 
         component: () => import('@/views/ReporterModule/OrderList/index'),
-        meta: { title: '我的订单', icon: 'table', roles: ['1', '2', '3', '4'] }
+        meta: { title: '我的订单', icon: 'table', roles: ['1', '2', '3'] }
+      },
+      {
+        path: 'verifyOrder',
+
+        component: () => import('@/views/CustodianModule/VerifyOrder/index'),
+        meta: { title: '订单审核', icon: 'table', roles: ['1', '4'] }
       }
     ]
   },
