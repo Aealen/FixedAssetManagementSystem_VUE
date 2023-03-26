@@ -5,6 +5,7 @@ import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
 import { getToken } from '@/utils/auth' // get token from cookie
 import getPageTitle from '@/utils/get-page-title'
+import Router from 'vue-router'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
@@ -37,23 +38,32 @@ router.beforeEach(async(to, from, next) => {
         } else {
           try {
             // get user info
-            // await store.dispatch('user/getCurrUserViewByToken')
-            const { roles } = await store.dispatch('user/getCurrUserViewByToken')
+
+            // if (!store.state.permission.isAddRoutes) {
+            //   await store.dispatch('permission/generateRoutes')
+            // }
+
+            const { roleId } = await store.dispatch('user/getCurrUserViewByToken')
             // 通过权限获取路由
-            console.log('roles ' + roles)
+            console.log('roleId ' + roleId)
             // console.log(sessionStorage.getItem('rid'))
-            const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
+            const accessRoutes = await store.dispatch('permission/generateRoutes', roleId)
+
 
             // 更新路由
-            // router.options.routes = store.getters.permission_routes
+            router.routes = store.getters.permission_routes
             // router.matcher = new Router().matcher
             // 动态添加可访问路由
 
             router.addRoutes(accessRoutes)
-            // console.log(store)
 
-            // next({...to,replace:true})
-            next()
+
+            // console.log(store)
+            console.log(to)
+            // next({ ...to, replace: true })
+            next({ ...to, replace: true })
+
+            // next()
           } catch (error) {
             // remove token and go to login page to re-login
             await store.dispatch('user/resetToken')

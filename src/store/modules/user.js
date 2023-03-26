@@ -7,7 +7,8 @@ const getDefaultState = () => {
     token: getToken(),
     username: '',
     avatar: '',
-    roles: []
+    roles: [],
+    isAddRoutes: false
   }
 }
 
@@ -81,7 +82,8 @@ const actions = {
         if (!data) {
           return reject('令牌失效,请重新登陆.')
         }
-        const { username, avatar } = data
+        // console.log(data)
+        const { username, roleId } = data
 
         // console.log(response)
         // 信息更新到session
@@ -90,8 +92,8 @@ const actions = {
         sessionStorage.setItem('nickname', response.data.nickname)
         sessionStorage.setItem('rid', response.data.roleId)
         commit('SET_NAME', username)
-        commit('SET_AVATAR', avatar)
-        commit('SET_ROLES', response.data.roleId)
+        // commit('SET_AVATAR', avatar)
+        commit('SET_ROLES', roleId)
         resolve(data)
       }).catch(error => {
         reject(error)

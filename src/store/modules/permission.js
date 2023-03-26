@@ -4,14 +4,19 @@ import { asyncRoutes, constantRoutes } from '@/router'
 // 匹配权限
 function hasPermission(roles, route) {
   // 在路由上找的到 route.mate 和 route.mate.roles
+
   if (route.meta && route.meta.roles) {
     // return roles.some(role => route.meta.roles.includes(role))
     // console.log(roles)
     // console.log(route.meta.roles)
     // return roles === route.meta.roles
     // return sessionStorage.getItem('rid') === route.meta.roles
-    for (var item in route.meta.roles) {
 
+    // if (route.meta.roles.indexOf(sessionStorage.getItem('rid') !== -1)) {
+    //   return true
+    // }
+
+    for (var item in route.meta.roles) {
       // console.log(route.meta.roles[item])
       if (route.meta.roles[item] === sessionStorage.getItem('rid')) { return true }
     }
@@ -33,6 +38,7 @@ export function filterAsyncRoutes(routes, roles) {
       if (tmp.children) {
         tmp.children = filterAsyncRoutes(tmp.children, roles)
       }
+
       res.push(tmp)
     }
   })
@@ -43,7 +49,8 @@ export function filterAsyncRoutes(routes, roles) {
 const state = {
   routes: [],
   addRoutes: [],
-  routerChange: false
+  routerChange: false,
+  isAddRoutes: false
 }
 
 const mutations = {
@@ -51,6 +58,7 @@ const mutations = {
     state.addRoutes = routes
     state.routes = constantRoutes.concat(routes) // 将过滤的路由和国定的路由存起来
     console.log(state.routes)
+    state.isAddRoutes = true
   }
 }
 
@@ -58,7 +66,7 @@ const mutations = {
 const actions = {
   generateRoutes({ commit }, roles) {
     return new Promise(resolve => {
-      let accessedRoutes
+      let accessedRoutes = null
       // 因为我不同角色有不同的路由，不需要全部显示，所以就直接赋值了，如果需要admin全部显示的话，可以看看下面的
       accessedRoutes = filterAsyncRoutes(asyncRoutes, roles)
       // // 路由是否为 admin, 有直接全部显示   admin 1
