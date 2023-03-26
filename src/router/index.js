@@ -81,12 +81,6 @@ export const asyncRoutes = [
 
         component: () => import('@/views/UserManage/index'),
         meta: { title: '用户列表', icon: 'table', roles: ['1'] }
-      },
-      {
-        path: 'tree',
-
-        component: () => import('@/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree', roles: ['1'] }
       }
     ]
   },
@@ -144,7 +138,6 @@ export const asyncRoutes = [
       },
       {
         path: 'reporterOrderList',
-
         component: () => import('@/views/ReporterModule/OrderList/index'),
         meta: { title: '我的订单', icon: 'table', roles: ['1', '2', '3'] }
       },
@@ -157,11 +150,16 @@ export const asyncRoutes = [
     ]
   },
   {
-    path: 'syslog',
+    path: '/log',
     component: Layout,
+    redirect: '/log/table',
+
+    meta: { title: '系统日志', icon: 'el-icon-s-help', roles: ['1'] },
     children: [
       {
-        path: 'https://github.com/Aealen/FixedAssetManagementSystem',
+        path: 'list',
+
+        component: () => import('@/views/SysLogModule/index'),
         meta: { title: '系统日志', icon: 'table', roles: ['1'] }
       }
     ]
@@ -172,7 +170,7 @@ export const asyncRoutes = [
     children: [
       {
         path: 'https://github.com/Aealen/FixedAssetManagementSystem',
-        meta: { title: 'Github仓库', icon: 'link' }
+        meta: { title: '项目仓库', icon: 'link' }
       }
     ]
   },

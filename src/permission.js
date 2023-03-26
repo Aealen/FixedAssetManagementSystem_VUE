@@ -59,8 +59,7 @@ router.beforeEach(async(to, from, next) => {
 
 
             // console.log(store)
-            console.log(to)
-            // next({ ...to, replace: true })
+
             next({ ...to, replace: true })
 
             // next()
