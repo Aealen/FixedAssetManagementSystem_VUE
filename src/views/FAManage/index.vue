@@ -1,5 +1,13 @@
 <template>
   <div class="app-container">
+
+    <el-input
+      v-model="pageParams.keyword"
+      placeholder="搜索关键字"
+      clearable
+      style="width: 50%"
+    />
+    <el-button type="primary" style="width: 100px;" @click="getSearch()">搜索</el-button>
     <el-table
       v-loading="listLoading"
       :data="list"
@@ -86,7 +94,8 @@
 <script>
 import FAInfoDraw from '@/components/FAInfoDraw/index'
 import request from '@/utils/request'
-import { delFa, getFaCount } from '@/api/fa'
+import { delFa, getFaCount, getFASearchCount } from '@/api/fa'
+import { getUserSearchCount } from '@/api/user'
 
 export default {
   filters: {
@@ -121,6 +130,20 @@ export default {
   },
   methods: {
 
+    async getSearch() {
+      this.listLoading = true
+      // 获取搜索结果的条数
+      await this.fetchData()
+
+      await getFASearchCount(this.pageParams.keyword, this.pageParams.currPage, this.pageParams.perPage).then(resp => {
+        if (resp.code === 200) {
+          this.sumCount = resp.data
+        }
+      })
+
+      this.listLoading = false
+      this.$forceUpdate()
+    },
     fetchData() {
       this.listLoading = true
       getFaCount().then(response => {

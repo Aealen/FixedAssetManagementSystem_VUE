@@ -6,6 +6,17 @@ export function getFaCount() {
     method: 'get'
   })
 }
+export function getFASearchCount(keyword, page, perPage) {
+  return request({
+    url: '/fa/getFASearchCount',
+    method: 'post',
+    data: {
+      'keyword': keyword,
+      'page': page,
+      'perPage': perPage
+    }
+  })
+}
 
 export function addFa(data) {
   return request({

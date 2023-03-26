@@ -68,7 +68,7 @@
       <el-table-column align="left" prop="created_at" label="操作" width="355">
         <template slot-scope="scope">
           <el-button type="primary" @click="showOrderDrawer=true;currSelOrderId=scope.row.id;showOrderInfoDraw()">详细信息</el-button>
-          <el-button type="danger" @click="delFixedAsset(scope.row.id)">删除此项</el-button>
+          <el-button v-if="!currRid===3" type="danger" @click="delFixedAsset(scope.row.id)">删除此项</el-button>
           <el-button v-if="scope.row.orderStatus===0" type="warning" @click="currOid=scope.row.id;selStatus=1;updateStatus()">处理完成</el-button>
           <el-button v-if="scope.row.orderStatus===1&&currRid===2" type="success" @click="currOid=scope.row.id;selStatus=1;showPayDialog=true;">订单结算</el-button>
           <!--          <el-dropdown>-->

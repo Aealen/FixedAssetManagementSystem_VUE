@@ -134,7 +134,7 @@ export const asyncRoutes = [
         path: 'list',
 
         component: () => import('@/views/OrderManage/index'),
-        meta: { title: '订单列表', icon: 'table', roles: ['1','4'] }
+        meta: { title: '订单列表', icon: 'table', roles: ['1', '4'] }
       },
       {
         path: 'addOrder',
@@ -153,6 +153,16 @@ export const asyncRoutes = [
 
         component: () => import('@/views/CustodianModule/VerifyOrder/index'),
         meta: { title: '订单审核', icon: 'table', roles: ['1', '4'] }
+      }
+    ]
+  },
+  {
+    path: 'syslog',
+    component: Layout,
+    children: [
+      {
+        path: 'https://github.com/Aealen/FixedAssetManagementSystem',
+        meta: { title: '系统日志', icon: 'table', roles: ['1'] }
       }
     ]
   },

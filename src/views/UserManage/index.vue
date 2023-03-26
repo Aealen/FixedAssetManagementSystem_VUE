@@ -1,5 +1,12 @@
 <template>
   <div class="app-container">
+    <el-input
+      v-model="pageParams.keyword"
+      placeholder="搜索关键字"
+      clearable
+      style="width: 50%"
+    />
+    <el-button type="primary" style="width: 100px;" @click="getSearch()">搜索</el-button>
     <el-table
       v-loading="listLoading"
       :data="list"
@@ -8,7 +15,6 @@
       fit
       highlight-current-row
     >
-
       <el-table-column align="center" label="ID" width="95">
         <template slot-scope="scope">
           <!--          {{ scope.$index }}-->
@@ -124,10 +130,11 @@
 
 <script>
 import UserManagerDrawer from '@/components/UserManagerDraw/index'
-import { delUser, getUserViewsCount, resetUserPassword } from '@/api/user'
+import { delUser, getUserSearchCount, getUserViewsByPage, getUserViewsCount, resetUserPassword } from '@/api/user'
 import { setUserRole } from '@/api/role'
 import { getAllDepts, setUserDept } from '@/api/depts'
 import request from '@/utils/request'
+import { Message } from 'element-ui'
 
 export default {
   filters: {
@@ -147,7 +154,7 @@ export default {
     return {
       list: null,
       pageParams: {
-        keyword: null,
+        keyword: '',
         currPage: 1,
         perPage: 10
       },
@@ -171,7 +178,20 @@ export default {
     this.fetchData()
   },
   methods: {
+    async getSearch() {
+      this.listLoading = true
+      // 获取搜索结果的条数
+      await this.fetchData()
 
+      await getUserSearchCount(this.pageParams.keyword, this.pageParams.currPage, this.pageParams.perPage).then(resp => {
+        if (resp.code === 200) {
+          this.sumCount = resp.data
+        }
+      })
+
+      this.listLoading = false
+      this.$forceUpdate()
+    },
     fetchData() {
       this.listLoading = true
       getUserViewsCount().then(response => {
@@ -251,15 +271,7 @@ export default {
     },
 
     handleChangePage(val) {
-      request({
-        url: '/user/queryUserByPage',
-        method: 'post',
-        data: {
-          'keyword': this.pageParams.keyword,
-          'page': val,
-          'perPage': this.pageParams.perPage
-        }
-      }).then(resp => {
+      getUserViewsByPage(this.pageParams.keyword, val, this.pageParams.perPage).then(resp => {
         if (resp.code !== 200) {
           this.$message.error(resp.msg)
         }

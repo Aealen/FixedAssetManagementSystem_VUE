@@ -1,5 +1,14 @@
 <template>
   <div class="app-container">
+
+    <el-input
+      v-model="pageParams.keyword"
+      placeholder="搜索关键字"
+      clearable
+      style="width: 50%"
+    />
+    <el-button type="primary" style="width: 100px;" @click="getSearch()">搜索</el-button>
+
     <el-table
       v-loading="listLoading"
       :data="list"
@@ -54,9 +63,9 @@
       <el-table-column label="订单状态" width="160" align="center">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.orderStatus===0">未处理</el-tag>
-          <el-tag type="warning" v-if="scope.row.orderStatus===1">未结算</el-tag>
-          <el-tag type="success" v-if="scope.row.orderStatus===2">已完成</el-tag>
-          <el-tag type="danger" v-if="scope.row.orderStatus===3">待审核</el-tag>
+          <el-tag v-if="scope.row.orderStatus===1" type="warning">未结算</el-tag>
+          <el-tag v-if="scope.row.orderStatus===2" type="success">已完成</el-tag>
+          <el-tag v-if="scope.row.orderStatus===3" type="danger">待审核</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="发起时间" width="160" align="center">
@@ -118,7 +127,8 @@
 
 <script>
 import OrderInfoDrawer from '@/components/OrderInfoDrawer/index'
-import { delOrder, getOrderByPage, getOrderCount, updateOrderStatus } from '@/api/order'
+import { delOrder, getOrderByPage, getOrderCount, getOrderSearchCount, updateOrderStatus } from '@/api/order'
+import { getUserSearchCount } from '@/api/user'
 
 export default {
   filters: {
@@ -149,7 +159,7 @@ export default {
       showStatusDialog: false,
       selStatus: null,
       currOid: null,
-      currRid:null,
+      currRid: null,
       statusOption: [
         {
           key: 0,
@@ -172,10 +182,23 @@ export default {
   },
   created() {
     this.fetchData()
-    this.currRid=sessionStorage.getItem('rid')
+    this.currRid = sessionStorage.getItem('rid')
   },
   methods: {
+    async getSearch() {
+      this.listLoading = true
+      // 获取搜索结果的条数
+      await this.fetchData()
 
+      await getOrderSearchCount(this.pageParams.keyword, this.pageParams.currPage, this.pageParams.perPage).then(resp => {
+        if (resp.code === 200) {
+          this.sumCount = resp.data
+        }
+      })
+
+      this.listLoading = false
+      this.$forceUpdate()
+    },
     fetchData() {
       this.listLoading = true
       getOrderCount().then(response => {

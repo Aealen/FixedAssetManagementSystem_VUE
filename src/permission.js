@@ -40,7 +40,7 @@ router.beforeEach(async(to, from, next) => {
             // await store.dispatch('user/getCurrUserViewByToken')
             const { roles } = await store.dispatch('user/getCurrUserViewByToken')
             // 通过权限获取路由
-            // console.log(roles)
+            console.log('roles ' + roles)
             // console.log(sessionStorage.getItem('rid'))
             const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
 

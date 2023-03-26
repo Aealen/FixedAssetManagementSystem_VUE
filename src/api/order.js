@@ -28,6 +28,18 @@ export function queryByPageForCustodian(data) {
   })
 }
 
+export function getOrderSearchCount(keyword, page, perPage) {
+  return request({
+    url: '/order/getOrderSearchCount',
+    method: 'post',
+    data: {
+      'keyword': keyword,
+      'page': page,
+      'perPage': perPage
+    }
+  })
+}
+
 export function getOrderByPage(data) {
   return request({
     url: '/order/queryByPage',

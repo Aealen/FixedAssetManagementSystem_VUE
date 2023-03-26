@@ -1,6 +1,6 @@
 <template>
   <div class="dashboard-container">
-    <div class="dashboard-text">name: {{ name }}</div>
+    <div class="dashboard-text">name: {{ username }}</div>
   </div>
 </template>
 
@@ -13,6 +13,14 @@ export default {
     ...mapGetters([
       'name'
     ])
+  },
+  data() {
+    return {
+      username: null
+    }
+  },
+  mounted() {
+    this.username = sessionStorage.getItem('nickname')
   }
 }
 </script>

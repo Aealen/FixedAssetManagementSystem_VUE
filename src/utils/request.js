@@ -77,13 +77,13 @@ service.interceptors.response.use(
           })
         })
       }
-      return Promise.reject(new Error(res.message || '发生错误'))
+      return Promise.reject(new Error(res.msg || '发生错误'))
     } else {
       return res
     }
   },
   error => {
-    console.log('err' + error) // for debug
+    // console.log('err' + error) // for debug
     Message({
       message: error.message,
       type: 'error',
