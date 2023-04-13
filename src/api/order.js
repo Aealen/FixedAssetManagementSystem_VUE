@@ -39,6 +39,18 @@ export function getOrderSearchCount(keyword, page, perPage) {
     }
   })
 }
+export function getOrderCountByStatus(status) {
+  return request({
+    url: '/order/getCountByStatus/' + status,
+    method: 'get'
+  })
+}
+export function getOrderCountTrend() {
+  return request({
+    url: '/order/getOrderCountTrend',
+    method: 'get'
+  })
+}
 
 export function getOrderByPage(data) {
   return request({
