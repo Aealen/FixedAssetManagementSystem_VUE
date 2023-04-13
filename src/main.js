@@ -6,11 +6,8 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import locale from 'element-ui/lib/locale/lang/en' // lang i18n
 
-import * as echarts from 'echarts'
-Vue.prototype.$echarts = echarts
-
 import '@/styles/index.scss' // global css
-
+//ces
 import App from './App'
 import store from './store'
 import router from './router'

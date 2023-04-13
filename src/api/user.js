@@ -36,12 +36,6 @@ export function getUserViewsByPage(keyword, page, perPage) {
     }
   })
 }
-export function getOnlineCount() {
-  return request({
-    url: '/user/getOnlineCount',
-    method: 'get'
-  })
-}
 
 export function getUserViewsCount() {
   return request({
