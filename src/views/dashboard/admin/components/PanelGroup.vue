@@ -10,7 +10,7 @@
           <div class="card-panel-text">
             系统用户数
           </div>
-          <count-to :start-val="0" :end-val="currUserCount" :duration="2600" class="card-panel-num" />
+          <count-to :start-val="0" :end-val="currUserCount" :duration="2300" class="card-panel-num" />
         </div>
       </div>
     </el-col>
@@ -24,7 +24,7 @@
           <div class="card-panel-text">
             固定资产数
           </div>
-          <count-to :start-val="0" :end-val="currFACount" :duration="3000" class="card-panel-num" />
+          <count-to :start-val="0" :end-val="currFACount" :duration="2300" class="card-panel-num" />
         </div>
       </div>
     </el-col>
@@ -38,7 +38,7 @@
           <div class="card-panel-text">
             已处理订单数
           </div>
-          <count-to :start-val="0" :end-val="currOrderCount" :duration="3200" class="card-panel-num" />
+          <count-to :start-val="0" :end-val="currOrderCount" :duration="2300" class="card-panel-num" />
         </div>
       </div>
     </el-col>
@@ -52,7 +52,7 @@
           <div class="card-panel-text">
             当前在线人数
           </div>
-          <count-to :start-val="0" :end-val=currOnlineCount :duration="3600" class="card-panel-num" />
+          <count-to :start-val="0" :end-val=currOnlineCount :duration="2300" class="card-panel-num" />
         </div>
       </div>
     </el-col>

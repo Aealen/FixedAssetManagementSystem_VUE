@@ -70,17 +70,17 @@
           <el-button type="primary" @click="showOrderDrawer=true;currSelOrderId=scope.row.id;showOrderInfoDraw()">详细信息</el-button>
           <el-button v-if="!currRid===3" type="danger" @click="delFixedAsset(scope.row.id)">删除此项</el-button>
           <el-button v-if="scope.row.orderStatus===0" type="warning" @click="currOid=scope.row.id;selStatus=1;updateStatus()">处理完成</el-button>
-          <el-button v-if="scope.row.orderStatus===1&&currRid===2" type="success" @click="currOid=scope.row.id;selStatus=1;showPayDialog=true;">订单结算</el-button>
-          <!--          <el-dropdown>-->
-          <!--            <el-link class="el-dropdown-link" type="primary">-->
-          <!--              操作列表<i class="el-icon-arrow-down el-icon&#45;&#45;right" />-->
-          <!--            </el-link>-->
-          <!--            <el-dropdown-menu slot="dropdown">-->
-          <!--              <el-dropdown-item><span @click="delFixedAsset(scope.row.id)">删除此项</span></el-dropdown-item>-->
-          <!--              <el-dropdown-item><span @click="currOid=scope.row.id;selStatus=scope.row.orderStatus;showStatusDialog=true;">处理完成</span></el-dropdown-item>-->
+          <el-button v-if="scope.row.orderStatus===1" type="success" @click="currOid=scope.row.id;selStatus=2;showPayDialog=true;">订单结算</el-button>
+<!--                    <el-dropdown>
+                      <el-link class="el-dropdown-link" type="primary">
+                        操作列表<i class="el-icon-arrow-down el-icon&#45;&#45;right" />
+                      </el-link>
+                      <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item><span @click="delFixedAsset(scope.row.id)">删除此项</span></el-dropdown-item>
+                        <el-dropdown-item><span @click="currOid=scope.row.id;selStatus=scope.row.orderStatus;showStatusDialog=true;">处理完成</span></el-dropdown-item>
 
-          <!--            </el-dropdown-menu>-->
-          <!--          </el-dropdown>-->
+                      </el-dropdown-menu>
+                    </el-dropdown>-->
         </template>
       </el-table-column>
     </el-table>
@@ -96,12 +96,11 @@
 
     <OrderInfoDrawer :order-i-d="currSelOrderId" :show-order-drawer="showOrderDrawer" @closeOrderInfoDraw="closeOrderInfoDraw()" />
     <el-dialog
-      title="订单支付"
+      title="订单结算"
       :visible.sync="showPayDialog"
       width="20%"
     >
-      TODO 余额：xxxx
-      确认支付。。。  余额不足 支付失败
+       确认结算！
       <span slot="footer" class="dialog-footer">
         <el-button @click="handleDialogClose">取 消</el-button>
         <el-button type="primary" @click="updateStatus();">确 定</el-button>
