@@ -37,7 +37,7 @@
           <el-option
             v-for="item in faOption"
             :key="item.id"
-            :label="item.faName"
+            :label="item.faName + item.faModel"
             :value="item.id"
           />
         </el-select>

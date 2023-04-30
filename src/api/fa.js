@@ -17,6 +17,13 @@ export function getFASearchCount(keyword, page, perPage) {
     }
   })
 }
+export function getFASearchCountByData(data) {
+  return request({
+    url: '/fa/getFASearchCount',
+    method: 'post',
+    data
+  })
+}
 
 export function addFa(data) {
   return request({
@@ -35,11 +42,12 @@ export function getFaByID(id) {
 
 export function queryFaByPage(data) {
   return request({
-    url: '/fa/getFaCount',
-    method: 'get',
+    url: '/fa/queryFaByPage',
+    method: 'post',
     data
   })
 }
+
 export function queryFaByTDID(data) {
   return request({
     url: '/fa/queryFaByTDID',

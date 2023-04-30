@@ -77,7 +77,7 @@
       <el-table-column align="center" prop="created_at" label="操作" width="250">
         <template slot-scope="scope">
           <el-link class="text_link" type="primary" @click="showOrderDrawer=true;currSelOrderId=scope.row.id;showOrderInfoDraw()">详细信息</el-link>
-          <el-dropdown v-if="currRid==='1'">
+          <el-dropdown v-if="currRid==='1'||currRid==='4'">
             <el-link class="el-dropdown-link" type="primary">
               操作列表<i class="el-icon-arrow-down el-icon--right" />
             </el-link>
@@ -182,7 +182,6 @@ export default {
   },
   created() {
     this.fetchData()
-    this.currRid = sessionStorage.getItem('rid')
   },
   methods: {
     async getSearch() {
@@ -200,6 +199,8 @@ export default {
       this.$forceUpdate()
     },
     fetchData() {
+      this.currRid = sessionStorage.getItem('rid')
+
       this.listLoading = true
       getOrderCount().then(response => {
         // console.log(response)

@@ -1,5 +1,12 @@
 <template>
   <div class="app-container">
+    <el-input
+      v-model="pageParams.keyword"
+      placeholder="搜索关键字"
+      clearable
+      style="width: 50%"
+    />
+    <el-button type="primary" style="width: 100px;" @click="getSearch()">搜索</el-button>
     <el-table
       v-loading="listLoading"
       :data="list"
@@ -117,9 +124,10 @@ import {
   getOrderByPage,
   getOrderByPageAndRole,
   getOrderCount,
-  getOrderCountByRole,
+  getOrderCountByRole, getOrderSearchCount,
   updateOrderStatus
 } from '@/api/order'
+import { getFASearchCount } from '@/api/fa'
 
 export default {
   filters: {
@@ -174,7 +182,20 @@ export default {
     this.currRid = sessionStorage.getItem('rid')
   },
   methods: {
+    async getSearch() {
+      this.listLoading = true
+      // 获取搜索结果的条数
+      await this.fetchData()
 
+      await getOrderSearchCount(this.pageParams.keyword, this.pageParams.currPage, this.pageParams.perPage).then(resp => {
+        if (resp.code === 200) {
+          this.sumCount = resp.data
+        }
+      })
+
+      this.listLoading = false
+      this.$forceUpdate()
+    },
     fetchData() {
       this.listLoading = true
 

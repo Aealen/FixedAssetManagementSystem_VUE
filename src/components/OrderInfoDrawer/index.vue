@@ -108,9 +108,14 @@ export default {
       currOrderData: []
     }
   },
-
-  updated() {
-    this.getData()
+  //
+  // updated() {
+  //   this.getData()
+  // },
+  watch: {
+    showOrderDrawer: async function() {
+      this.getData()
+    }
   },
   methods: {
     getData() {

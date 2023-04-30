@@ -7,6 +7,22 @@
       clearable
       style="width: 50%"
     />
+    <el-select v-model="searchByTD.did" clearable placeholder="请选择部门" @change="getFAByTD">
+      <el-option
+        v-for="item in deptOptions"
+        :key="item.did"
+        :label="item.name"
+        :value="item.did"
+      />
+    </el-select>
+    <el-select v-model="searchByTD.tid" clearable placeholder="请选择角色" @change="getFAByTD">
+      <el-option
+        v-for="item in typeOptions"
+        :key="item.tid"
+        :label="item.name"
+        :value="item.tid"
+      />
+    </el-select>
     <el-button type="primary" style="width: 100px;" @click="getSearch()">搜索</el-button>
     <el-table
       v-loading="listLoading"
@@ -63,7 +79,7 @@
       <el-table-column align="center" prop="created_at" label="操作" width="350">
         <template slot-scope="scope">
           <el-link class="text_link" type="primary" @click="showFADrawer=true;currSelFaId=scope.row.id;showFAInfoDraw()">详细信息</el-link>
-          <el-dropdown>
+          <el-dropdown v-if="currRole==='1'||currRole==='4'">
             <el-link class="el-dropdown-link" type="primary">
               操作列表<i class="el-icon-arrow-down el-icon--right" />
             </el-link>
@@ -94,8 +110,8 @@
 <script>
 import FAInfoDraw from '@/components/FAInfoDraw/index'
 import request from '@/utils/request'
-import { delFa, getFaCount, getFASearchCount } from '@/api/fa'
-import { getUserSearchCount } from '@/api/user'
+import { delFa, getAllType, getFaCount, getFASearchCount, getFASearchCountByData, queryFaByPage } from '@/api/fa'
+import { getAllDepts } from '@/api/depts'
 
 export default {
   filters: {
@@ -119,17 +135,58 @@ export default {
         currPage: 1,
         perPage: 10
       },
+      searchByTD: {
+        tid: null,
+        did: null
+      },
+      currRole: null,
       sumCount: 0,
       listLoading: true,
       showFADrawer: false,
-      currSelFaId: 0
+      currSelFaId: 0,
+      deptOptions: null,
+      typeOptions: null
     }
   },
   created() {
     this.fetchData()
+    getAllDepts().then(resp => {
+      this.deptOptions = resp.data
+    })
+    getAllType().then(resp => {
+      this.typeOptions = resp.data
+    })
+  },
+  mounted() {
   },
   methods: {
+    async getFAByTD() {
+      if (this.searchByTD.tid !== '' || this.searchByTD.did !== '') {
+        this.listLoading = true
+        // 先查再计数
 
+        await getFASearchCountByData({
+          keyword: this.pageParams.keyword,
+          page: this.pageParams.currPage,
+          perPage: this.pageParams.perPage,
+          tid: this.searchByTD.tid,
+          did: this.searchByTD.did
+        }).then(resp => {
+          this.sumCount = resp.data
+        })
+        await queryFaByPage({
+          tid: this.searchByTD.tid,
+          did: this.searchByTD.did,
+          page: 1,
+          perPage: this.sumCount
+        }).then(resp => {
+          this.list = resp.data
+          this.listLoading = false
+        })
+      } else {
+        this.fetchData()
+      }
+    },
     async getSearch() {
       this.listLoading = true
       // 获取搜索结果的条数
@@ -145,6 +202,7 @@ export default {
       this.$forceUpdate()
     },
     fetchData() {
+      this.currRole = sessionStorage.getItem('rid')
       this.listLoading = true
       getFaCount().then(response => {
         // console.log(response)
@@ -208,7 +266,7 @@ export default {
     },
     showFAInfoDraw() {
       this.showFADrawer = true
-      console.log(this.showFADrawer)
+      // console.log(this.showFADrawer)
     },
     async closeFAInfoDraw() {
       this.showFADrawer = false

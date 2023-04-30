@@ -89,13 +89,13 @@ export const asyncRoutes = [
     component: Layout,
     redirect: '/fa/table',
 
-    meta: { title: '资产管理', icon: 'el-icon-s-help', roles: ['1'] },
+    meta: { title: '资产管理', icon: 'el-icon-s-help', roles: ['1', '3', '4'] },
     children: [
       {
         path: 'list',
 
         component: () => import('@/views/FAManage/index'),
-        meta: { title: '资产列表', icon: 'table', roles: ['1'] }
+        meta: { title: '资产列表', icon: 'table', roles: ['1', '3', '4'] }
       },
       {
         path: 'add',

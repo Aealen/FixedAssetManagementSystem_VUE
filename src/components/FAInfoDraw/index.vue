@@ -126,9 +126,16 @@ export default {
       costodianOption: []
     }
   },
-
-  updated() {
-    if (this.FAId !== 0 && !this.isEditing) {
+  // updated() {
+  //   if (this.FAId !== 0 && !this.isEditing) {
+  //
+  //   }
+  // },
+  watch: {
+    isEditing: async function() {
+      this.getData()
+    },
+    showFADrawer: async function() {
       this.getData()
     }
   },
