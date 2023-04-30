@@ -5,67 +5,66 @@
       :visible.sync="showUserDrawer"
       :before-close="handleClose"
     >
-      <el-descriptions class="margin-top"  :column="3"  border>
+      <el-descriptions class="margin-top" :column="3" border>
 
         <el-descriptions-item span="3">
-          <template slot="label" >
-            <i class="el-icon-user"></i>
+          <template slot="label">
+            <i class="el-icon-user" />
             用户名
           </template>
-          {{currUserData.username}}
+          {{ currUserData.username }}
         </el-descriptions-item>
         <el-descriptions-item span="3">
-          <template slot="label" >
-            <i class="el-icon-user"></i>
+          <template slot="label">
+            <i class="el-icon-user" />
             昵称
           </template>
-          {{currUserData.nickname}}
+          {{ currUserData.nickname }}
         </el-descriptions-item>
         <el-descriptions-item span="3">
-          <template slot="label" >
-            <i class="el-icon-user"></i>
+          <template slot="label">
+            <i class="el-icon-user" />
             联系电话
           </template>
-          {{currUserData.phoneNum}}
+          {{ currUserData.phoneNum }}
         </el-descriptions-item>
         <el-descriptions-item span="3">
-          <template slot="label" >
-            <i class="el-icon-user"></i>
+          <template slot="label">
+            <i class="el-icon-user" />
             电子邮箱
           </template>
-          {{currUserData.email}}
+          {{ currUserData.email }}
         </el-descriptions-item>
         <el-descriptions-item span="3">
-          <template slot="label" >
-            <i class="el-icon-user"></i>
+          <template slot="label">
+            <i class="el-icon-user" />
             所属部门
           </template>
-          {{currUserData.deptId}} . {{currUserData.deptName}}
+          {{ currUserData.deptId }} . {{ currUserData.deptName }}
         </el-descriptions-item>
         <el-descriptions-item span="3">
-          <template slot="label" >
-            <i class="el-icon-user"></i>
+          <template slot="label">
+            <i class="el-icon-user" />
             用户权限等级
           </template>
-          {{currUserData.roleId}} . {{currUserData.roleName}}
+          {{ currUserData.roleId }} . {{ currUserData.roleName }}
         </el-descriptions-item>
         <el-descriptions-item span="3">
-          <template slot="label" >
-            <i class="el-icon-user"></i>
+          <template slot="label">
+            <i class="el-icon-user" />
             注册时间
           </template>
-          {{currUserData.regTime}}
+          {{ currUserData.regTime }}
         </el-descriptions-item>
         <el-descriptions-item span="3">
-          <template slot="label" >
-            <i class="el-icon-user"></i>
+          <template slot="label">
+            <i class="el-icon-user" />
             上次登陆时间
           </template>
-          {{currUserData.loginTime}}
+          {{ currUserData.loginTime }}
         </el-descriptions-item>
 
       </el-descriptions>
-
 
     </el-drawer>
 
@@ -95,21 +94,38 @@ export default {
     }
   },
 
-  updated() {
-    // 获取用户信息
-    request({
-      url: '/user/getUserViewById/' + this.userId,
-      method: 'get'
-    }).then(resp => {
-      if (resp.code !== 200) {
-        this.$message.error(resp.msg)
-      }
-      this.currUserData = resp.data
-      // this.listLoading = false
-    }).catch(err => {
-      console.log(err)
-      // this.listLoading = false
-    })
+  // updated() {
+  //   // 获取用户信息
+  //   request({
+  //     url: '/user/getUserViewById/' + this.userId,
+  //     method: 'get'
+  //   }).then(resp => {
+  //     if (resp.code !== 200) {
+  //       this.$message.error(resp.msg)
+  //     }
+  //     this.currUserData = resp.data
+  //     // this.listLoading = false
+  //   }).catch(err => {
+  //     console.log(err)
+  //     // this.listLoading = false
+  //   })
+  // },
+  watch: {
+    showUserDrawer: function() {
+      request({
+        url: '/user/getUserViewById/' + this.userId,
+        method: 'get'
+      }).then(resp => {
+        if (resp.code !== 200) {
+          this.$message.error(resp.msg)
+        }
+        this.currUserData = resp.data
+        // this.listLoading = false
+      }).catch(err => {
+        console.log(err)
+        // this.listLoading = false
+      })
+    }
   },
   methods: {
     handleClose(done) {
