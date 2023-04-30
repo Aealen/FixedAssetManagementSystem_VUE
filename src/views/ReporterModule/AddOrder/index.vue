@@ -93,6 +93,7 @@ export default {
   methods: {
 
     getWorker() {
+      this.form.faWorker = null
       if (this.form.faDept === null) {
         // 部门为空 则只能 用faID 间接查询
         if (this.form.faId !== null) {
@@ -131,15 +132,18 @@ export default {
       })
     },
     getFaInfo() {
+      this.form.faWorker = null
+      this.form.faId = null
       queryFaByTDID({ tid: this.form.faType, did: this.form.faDept }).then(resp => {
         if (resp.code === 200) {
           this.faOption = resp.data
           // this.getWorker(this.form.faId, this.form.faDept)
+          this.form.faWorker = null
         }
       })
     },
     onSubmit() {
-      addOrder({ fa: this.form.faId, worker:this.form.faWorker, description: this.form.desc, reporter: sessionStorage.getItem('uid') }).then(resp => {
+      addOrder({ fa: this.form.faId, worker: this.form.faWorker, description: this.form.desc, reporter: sessionStorage.getItem('uid') }).then(resp => {
         if (resp.code === 200) {
           this.$message.success({ message: '提交成功！请勿重复提交', duration: 5000 })
         }

@@ -6,6 +6,22 @@
       clearable
       style="width: 50%"
     />
+    <el-select v-model="searchByDeptAndRole.did" clearable placeholder="请选择部门" @change="getUserViewsByDeptAndRole">
+      <el-option
+        v-for="item in deptOptions"
+        :key="item.did"
+        :label="item.name"
+        :value="item.did"
+      />
+    </el-select>
+    <el-select v-model="searchByDeptAndRole.rid" clearable placeholder="请选择角色" @change="getUserViewsByDeptAndRole">
+      <el-option
+        v-for="item in roleOptions"
+        :key="item.rid"
+        :label="item.name"
+        :value="item.rid"
+      />
+    </el-select>
     <el-button type="primary" style="width: 100px;" @click="getSearch()">搜索</el-button>
     <el-table
       v-loading="listLoading"
@@ -130,11 +146,17 @@
 
 <script>
 import UserManagerDrawer from '@/components/UserManagerDraw/index'
-import { delUser, getUserSearchCount, getUserViewsByPage, getUserViewsCount, resetUserPassword } from '@/api/user'
-import { setUserRole } from '@/api/role'
+import {
+  delUser, getUserByDR,
+  getUserByDRCount,
+  getUserSearchCount,
+  getUserViewsByPage,
+  getUserViewsCount,
+  resetUserPassword
+} from '@/api/user'
+import { getAllRoles, setUserRole } from '@/api/role'
 import { getAllDepts, setUserDept } from '@/api/depts'
 import request from '@/utils/request'
-import { Message } from 'element-ui'
 
 export default {
   filters: {
@@ -158,6 +180,10 @@ export default {
         currPage: 1,
         perPage: 10
       },
+      searchByDeptAndRole: {
+        rid: null,
+        did: null
+      },
       sumCount: 0,
       listLoading: true,
       showUserDrawer: false,
@@ -176,6 +202,12 @@ export default {
   },
   created() {
     this.fetchData()
+    getAllDepts().then(resp => {
+      this.deptOptions = resp.data
+    })
+    getAllRoles().then(resp => {
+      this.roleOptions = resp.data
+    })
   },
   methods: {
     async getSearch() {
@@ -346,6 +378,21 @@ export default {
       console.log('parent:' + this.showUserDrawer)
       this.showUserDrawer = false
       console.log('parent:' + this.showUserDrawer)
+    },
+    async getUserViewsByDeptAndRole() {
+      if (this.searchByDeptAndRole.rid !== '' || this.searchByDeptAndRole.did !== '') {
+        // 数量
+        this.listLoading = true
+        await getUserByDRCount(this.searchByDeptAndRole.rid, this.searchByDeptAndRole.did).then(resp => {
+          this.sumCount = resp.data
+        })
+        await getUserByDR(this.searchByDeptAndRole.rid, this.searchByDeptAndRole.did, 1, this.sumCount).then(resp => {
+          this.list = resp.data
+          this.listLoading = false
+        })
+      } else {
+        this.fetchData()
+      }
     }
   }
 }

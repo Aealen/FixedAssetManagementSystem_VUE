@@ -114,9 +114,6 @@
 import OrderInfoDrawer from '@/components/OrderInfoDrawer/index'
 import {
   delOrder,
-  getOrderByPage,
-  getOrderByPageAndRole,
-  getOrderCount,
   getOrderCountByRole, queryByPageForCustodian,
   updateOrderStatus
 } from '@/api/order'

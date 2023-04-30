@@ -60,6 +60,28 @@ export function getUserSearchCount(keyword, page, perPage) {
     }
   })
 }
+export function getUserByDRCount(roleId, deptId) {
+  return request({
+    url: '/user/getByDeptRoleCount',
+    method: 'post',
+    data: {
+      'roleId': roleId,
+      'deptId': deptId
+    }
+  })
+}
+export function getUserByDR(roleId, deptId, page, perPage) {
+  return request({
+    url: '/user/getByDeptRole',
+    method: 'post',
+    data: {
+      'roleId': roleId,
+      'deptId': deptId,
+      'page': page,
+      'perPage': perPage
+    }
+  })
+}
 
 export function getUserViewByToken() {
   return request({
